@@ -6,7 +6,7 @@ import ExpansionTable from '@/components/ExpansionTable.vue';
 //import { mainTable, secondaryTable, infoTable } from '@/assets/data2.mjs';
 import InfoTable from '@/components/InfoTable.vue';
 ///Main deploy segmentation
-const produ = true;
+const produ = false;
 /// Visual effects
 const screenMode = ref("pi pi-moon");
 const toggleColorScheme = () => {
