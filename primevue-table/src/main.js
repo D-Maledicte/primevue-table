@@ -7,7 +7,7 @@ import router from './router'
 // Addons base de Primevue
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
-import { definePreset, usePreset } from '@primevue/themes';
+import { definePreset } from '@primevue/themes';
 // Addons de campos base
 import Button from "primevue/button";
 import ButtonGroup from 'primevue/buttongroup';
@@ -28,7 +28,9 @@ import Column from 'primevue/column';
 import Row from 'primevue/row';
 // Addons visuales
 import Tooltip from 'primevue/tooltip';
-import Dialog from 'primevue/dialog'; 
+import Dialog from 'primevue/dialog';
+import Skeleton from 'primevue/skeleton';
+
 import 'primeicons/primeicons.css';
 
 
@@ -81,39 +83,6 @@ const Blue = definePreset(Aura, {
             }
         }
       }
-      /*
-      ,
-      colorScheme: {
-          light: {
-              primary: {
-                  color: '{blue.500}',
-                  inverseColor: '#ffffff',  // Asegúrate que este sigue siendo adecuado
-                  hoverColor: '{blue.900}',
-                  activeColor: '{blue.800}'
-              },
-              highlight: {
-                  background: '{blue.500}',
-                  focusBackground: '{blue.700}',
-                  color: '#ffffff',  // Revisa si sigue siendo legible
-                  focusColor: '#000000'
-              }
-          },
-          dark: {
-              primary: {
-                  color: '{blue.50}',
-                  inverseColor: '{blue.950}',
-                  hoverColor: '{blue.100}',
-                  activeColor: '{blue.200}'
-              },
-              highlight: {
-                  background: 'rgba(250, 250, 250, .16)',
-                  focusBackground: 'rgba(250, 250, 250, .24)',
-                  color: 'rgba(255,255,255,.87)',  // Revisa si sigue siendo legible
-                  focusColor: 'rgba(255,255,255,.87)'
-              }
-          }
-      }
-      */
   }
 });
 
@@ -194,8 +163,8 @@ app.use(PrimeVue, {
         "gte": "Mayor o igual a",
         "lt": "Menor que",
         "lte": "Menor o igual a",
-        "matchAll": "Coincidir todo",
-        "matchAny": "Coincidir con cualquiera",
+        "matchAll": "Cumplir con ambas reglas",
+        "matchAny": "Cumplir con cualquiera",
         "medium": "Medio",
         "monthNames": [
           "Enero",
@@ -339,5 +308,6 @@ app.component('DatePicker', DatePicker);
 app.component('Checkbox', Checkbox);
 app.component('MultiSelect', MultiSelect);
 app.component('Dialog', Dialog);
+app.component('Skeleton', Skeleton);
 app.directive('tooltip', Tooltip);
 app.mount('#app')

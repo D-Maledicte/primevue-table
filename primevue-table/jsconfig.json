@@ -4,5 +4,13 @@
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["node_modules", "dist","./src/assets/data.mjs","./src/assets/data3.mjs","./src/assets/seed_generator.cjs","./src/assets/Seeds.mjs","./src/assets/Seeds2.mjs"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "./src/assets/data.mjs",
+    "./src/assets/data3.mjs",
+    "./src/assets/seed_generator.cjs",
+    "./src/assets/Seeds.mjs",
+    "./src/assets/Seeds2.mjs"
+  ]
 }
