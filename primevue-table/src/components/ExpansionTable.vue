@@ -44,7 +44,7 @@ const secondaryfilteredProducts = ref();
 const initSecondaryFilters = () => {
   filters.value = {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    aseguradora: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    aseguradora: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
     estado: { value: null, matchMode: FilterMatchMode.IN },
     fecha_bloqueo: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
     fecha_cot_esp: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
@@ -202,11 +202,11 @@ onMounted(async () => {
                   <template v-else>
                     <template v-if="col.field == 'acciones'">
                     <ButtonGroup >
-                      <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button2' } }" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-info-circle" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Mas info'" @click="emitShowLogsTable(data)" />
-                      <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button2' } }" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-send" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Responder pedido'" @click="procesarSecondaryOperacion(data)" />
-                      <Button icon="pi pi-check" :pt="{ root: { class: 'my-custom-button2' } }" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-check" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Dar de alta'" @click="procesarSecondaryOperacion(data)"/>
                     </ButtonGroup>
                   </template>

@@ -6,7 +6,7 @@ import ExpansionTable from '@/components/ExpansionTable.vue';
 //import { mainTable, secondaryTable, infoTable } from '@/assets/data2.mjs';
 import InfoTable from '@/components/InfoTable.vue';
 ///Main deploy segmentation
-const produ = false;
+const produ = true;
 /// Visual effects
 const screenMode = ref("pi pi-moon");
 const toggleColorScheme = () => {
@@ -192,7 +192,7 @@ onMounted(async () => {
   <main class="main_selector">
     <div class="card">
         <DataTable v-model:filters="filters"
-        :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador', 'aseguradora']" filterDisplay="menu"
+        :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']" filterDisplay="menu"
         :value="products" sortField="estado" :sortOrder="1" stripedRows paginator :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem" :expandedRows="expandedRows"
         dataKey="id_cotizacion" @filter="onFilter" scrollable scrollHeight="400px" stateStorage="session" stateKey="dt-state-demo-session">

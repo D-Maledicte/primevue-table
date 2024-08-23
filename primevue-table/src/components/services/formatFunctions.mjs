@@ -66,7 +66,7 @@ const filters_distinction = (field) => {
   if (field === "balance") {
     return expectedFilter = { filterField: field, dataType:"numeric" };
   }
-  if (field === "titulo" || field === "tomador") {
+  if (field === "titulo" || field === "tomador" || field === "aseguradora") {
     return expectedFilter = { filterMenuStyle: "{ width: '14rem' }" }
   }
   if (field == "estado") {
