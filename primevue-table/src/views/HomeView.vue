@@ -225,8 +225,7 @@ onMounted(async () => {
             <template v-else>
               <template v-if="col.field == 'acciones'">
               <ButtonGroup>
-                <Button icon="pi pi-times" :pt="{ root: { class: 'my-custom-button' } }" aria-label="Cancel" size="small"
-                  v-tooltip.bottom="'Cerrar cotizacion'" @click="procesarOperacion(data)"/>
+                <Button icon="pi pi-times"  aria-label="Cancel" size="small" :pt="{ root: { class: 'my-custom-button' } }" v-tooltip.bottom="'Cerrar cotizacion'" @click="procesarOperacion(data)"/>
               </ButtonGroup>
             </template>
             <template v-else-if="col.field == 'balance'">
@@ -291,8 +290,8 @@ onMounted(async () => {
 
 <style>
 .my-custom-button {
-  background-color: #1e3a8a; /* Green background */
-  border: 1px solid #1e3a8a; /* Tomato border */
-  color: #cbd5e1; /* White text */
+  background-color: #1e3a8a !important; /* Green background */
+  border: 1px solid #1e3a8a !important; /* Tomato border */
+  color: #cbd5e1 !important; /* White text */
 }
 </style>

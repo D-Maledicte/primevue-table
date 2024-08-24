@@ -202,11 +202,11 @@ onMounted(async () => {
                   <template v-else>
                     <template v-if="col.field == 'acciones'">
                     <ButtonGroup >
-                      <Button icon="pi pi-info-circle" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button2' } }" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Mas info'" @click="emitShowLogsTable(data)" />
-                      <Button icon="pi pi-send" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button2' } }" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Responder pedido'" @click="procesarSecondaryOperacion(data)" />
-                      <Button icon="pi pi-check" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-check" :pt="{ root: { class: 'my-custom-button2' } }" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Dar de alta'" @click="procesarSecondaryOperacion(data)"/>
                     </ButtonGroup>
                   </template>
@@ -253,8 +253,8 @@ onMounted(async () => {
 
 <style>
 .my-custom-button2 {
-  background-color: #1e3a8a; /* Green background */
-  border: 1px solid #1e3a8a; /* Tomato border */
-  color: #cbd5e1; /* White text */
+  background-color: #1e3a8a !important; /* Green background */
+  border: 1px solid #1e3a8a !important; /* Tomato border */
+  color: #cbd5e1 !important; /* White text */
 }
 </style>
