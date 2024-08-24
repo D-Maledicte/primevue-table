@@ -181,12 +181,12 @@ onMounted(async () => {
             :rowsPerPageOptions="[5, 10, 20, 50]">
               <template #header>
               <div class="flex justify-start gap-2">
-                <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button2' } }" outlined @click="clearSecondaryFilter()" />
+                <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="clearSecondaryFilter()" />
                 <IconField>
                   <InputIcon>
                     <i class="pi pi-search" />
                   </InputIcon>
-                  <InputText v-model="filters['global'].value" :pt="{ root: { class: 'my-custom-button2' } }" placeholder="Busqueda general" />
+                  <InputText v-model="filters['global'].value" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" placeholder="Busqueda general" />
                 </IconField>
               </div>
               </template>
@@ -202,11 +202,11 @@ onMounted(async () => {
                   <template v-else>
                     <template v-if="col.field == 'acciones'">
                     <ButtonGroup class="flex gap-px">
-                      <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button3' } }" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Mas info'" @click="emitShowLogsTable(data)" />
-                      <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button3' } }" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Responder pedido'" @click="procesarSecondaryOperacion(data)" />
-                      <Button icon="pi pi-check" :pt="{ root: { class: 'my-custom-button3' } }" aria-label="Cancel" size="small"
+                      <Button icon="pi pi-check" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Dar de alta'" @click="procesarSecondaryOperacion(data)"/>
                     </ButtonGroup>
                   </template>
@@ -249,20 +249,20 @@ onMounted(async () => {
               </Column>
               <template #footer> 
                 <div class="flex flex-start gap-2">
-                  <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button3' } }"></Tag>
+                  <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button-secondary' } }"></Tag>
                 </div>
               </template>
   </DataTable>
 </template>
 
 <style>
-.my-custom-button3 {
+.my-custom-button-secondary {
   background-color: #1e3a8a !important; /* Green background */
   border: 1px solid #1e3a8a !important; /* Tomato border */
   color: #cbd5e1 !important; /* White text */
 }
 
-.my-custom-button2 {
+.my-custom-button-secondary-no-background {
   /* background-color: #1e3a8a !important;  Green background */
   border: 1px solid #1e3a8a !important; /* Tomato border */
   color: #cbd5e1 !important; /* White text */

@@ -240,17 +240,17 @@ onMounted(async () => {
         <template #header>
           <div class="flex justify-between">
             <div class="flex gap-2">
-              <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button' } }" @click="toggleColorScheme()" />
-              <Button icon="pi pi-file-excel" label="Export" :pt="{ root: { class: 'my-custom-button' } }" @click="exportCSV($event)" />
+              <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }" @click="toggleColorScheme()" />
+              <Button icon="pi pi-file-excel" label="Export" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
             </div>
             
             <div class="flex justify-end gap-4">
-            <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button2' } }" outlined @click="clearFilter()" />
+            <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-main-no-background' } }" outlined @click="clearFilter()" />
             <IconField>
               <InputIcon>
                 <i class="pi pi-search" />
               </InputIcon>
-              <InputText v-model="localFilterValue" :pt="{ root: { class: 'my-custom-button2' } }" placeholder="Busqueda general" />
+              <InputText v-model="localFilterValue" :pt="{ root: { class: 'my-custom-button-main-no-background' } }" placeholder="Busqueda general" />
             </IconField>
           </div>
           </div>
@@ -269,7 +269,7 @@ onMounted(async () => {
             <template v-else>
               <template v-if="col.field == 'acciones'">
               <ButtonGroup>
-                <Button icon="pi pi-times"  aria-label="Cancel" size="small" :pt="{ root: { class: 'my-custom-button' } }" v-tooltip.bottom="'Cerrar cotizacion'" @click="procesarOperacion(data)"/>
+                <Button icon="pi pi-times"  aria-label="Cancel" size="small" :pt="{ root: { class: 'my-custom-button-main' } }" v-tooltip.bottom="'Cerrar cotizacion'" @click="procesarOperacion(data)"/>
               </ButtonGroup>
             </template>
             <template v-else-if="col.field == 'balance'">
@@ -324,8 +324,8 @@ onMounted(async () => {
         </template>
         <template #footer>
           <div class="flex flex-start gap-2">
-          <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button' } }"></Tag>
-          <Tag :value="`Prima asegurada por: ${formattedCurrency}`" :pt="{ root: { class: 'my-custom-button' } }"></Tag>
+          <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button-main' } }"></Tag>
+          <Tag :value="`Prima asegurada por: ${formattedCurrency}`" :pt="{ root: { class: 'my-custom-button-main' } }"></Tag>
           </div>
         </template>
       </DataTable>
@@ -338,19 +338,19 @@ onMounted(async () => {
 </template>
 
 <style>
-.my-custom-button {
+.my-custom-button-main {
   background-color: #1e3a8a !important; /* Green background */
   border: 1px solid #1e3a8a !important; /* Tomato border */
   color: #eab308 !important; /* White text */
 }
 
-.my-custom-button2 {
+.my-custom-button-main-no-background {
   /* background-color: #1e3a8a !important;  Green background */
   border: 1px solid #1e3a8a !important; /* Tomato border */
   color: #eab308 !important; /* White text */
 }
 
-.my-custom-button3 {
+.my-custom-button-main-no-background-no-color {
   /* background-color: #1e3a8a !important;  Green background */
   /* border: 1px solid #1e3a8a !important;  Tomato border */
   color: #eab308 !important; /* White text */
