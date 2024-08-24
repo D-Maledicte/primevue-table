@@ -201,7 +201,7 @@ onMounted(async () => {
                   </template>
                   <template v-else>
                     <template v-if="col.field == 'acciones'">
-                    <ButtonGroup >
+                    <ButtonGroup class="flex gap-px">
                       <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button2' } }" aria-label="Cancel" size="small"
                         v-tooltip.bottom="'Mas info'" @click="emitShowLogsTable(data)" />
                       <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button2' } }" aria-label="Cancel" size="small"
