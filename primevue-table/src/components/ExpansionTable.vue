@@ -247,7 +247,11 @@ onMounted(async () => {
                   </MultiSelect>
                 </template>
               </Column>
-              <template #footer> Numero de registros: {{ startingNumber }} </template>
+              <template #footer> 
+                <div class="flex flex-start gap-2">
+                  <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button3' } }"></Tag>
+                </div>
+              </template>
   </DataTable>
 </template>
 

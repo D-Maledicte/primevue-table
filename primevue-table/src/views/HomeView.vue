@@ -322,10 +322,15 @@ onMounted(async () => {
             <ExpansionTable :id_record="slotProps.data.id_cotizacion" :produ="produ" @showLogsTable="showLogsTable"></ExpansionTable>
           </div>
         </template>
-        <template #footer> Numero de registros: {{ startingNumber }}. Prima asegurada por {{ formattedCurrency }} </template>
+        <template #footer>
+          <div class="flex flex-start gap-2">
+          <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button' } }"></Tag>
+          <Tag :value="`Prima asegurada por: ${formattedCurrency}`" :pt="{ root: { class: 'my-custom-button' } }"></Tag>
+          </div>
+        </template>
       </DataTable>
       <Dialog v-model:visible="visible" maximizable modal header="Historial de logs asociados" :style="{ width: '50rem' }" dismissableMask>
-        <InfoTable v-if="visible" :id_record="logs" :produ="produ"</InfoTable>
+        <InfoTable v-if="visible" :id_record="logs" :produ="produ"></InfoTable>
       </Dialog>
     </div>
   </main>
@@ -345,7 +350,7 @@ onMounted(async () => {
   color: #eab308 !important; /* White text */
 }
 
-.my-custom-button2 {
+.my-custom-button3 {
   /* background-color: #1e3a8a !important;  Green background */
   /* border: 1px solid #1e3a8a !important;  Tomato border */
   color: #eab308 !important; /* White text */
