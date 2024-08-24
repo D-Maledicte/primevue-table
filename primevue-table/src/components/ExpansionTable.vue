@@ -158,6 +158,11 @@ const filteredProductsCount = computed(() => {
   }
 });
 
+const dt = ref();
+const exportCSV = () => {
+    dt.value.exportCSV();
+};
+
 onMounted(async () => {
   if (props.produ) {
     SecondaryTableRows.value = await fetchData("http://localhost:3000/api/secondaryTable/" + props.id_record);
@@ -177,17 +182,22 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DataTable v-model:filters="filters" :globalFilterFields="['estado', 'aseguradora']" filterDisplay="menu" :value="products" @filter="onFilter" tableStyle="min-width: 50rem" stripedRows paginator :rows="5"
+  <DataTable v-model:filters="filters" :globalFilterFields="['estado', 'aseguradora']" filterDisplay="menu" :value="products" @filter="onFilter" tableStyle="min-width: 50rem" ref="dt" stripedRows paginator :rows="5"
             :rowsPerPageOptions="[5, 10, 20, 50]">
               <template #header>
-              <div class="flex justify-start gap-2">
-                <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="clearSecondaryFilter()" />
+              <div class="flex justify-between">
+                <div class="flex gap-2">
+                  <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="clearSecondaryFilter()" />
                 <IconField>
                   <InputIcon>
                     <i class="pi pi-search" />
                   </InputIcon>
                   <InputText v-model="filters['global'].value" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" placeholder="Busqueda general" />
                 </IconField>
+                </div>
+                <div class="flex justify-end gap-4">
+                  <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-secondary' } }" @click="exportCSV($event)" />
+                </div>
               </div>
               </template>
               <template #empty> No hay registros que coincidan con la busqueda </template>

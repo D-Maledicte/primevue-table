@@ -241,7 +241,7 @@ onMounted(async () => {
           <div class="flex justify-between">
             <div class="flex gap-2">
               <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }" @click="toggleColorScheme()" />
-              <Button icon="pi pi-file-excel" label="Export" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
+              <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
             </div>
             
             <div class="flex justify-end gap-4">
