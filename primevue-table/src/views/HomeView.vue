@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, toRaw, computed} from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction,getPrimaAsegurada } from "../components/services/formatFunctions.mjs"
+import {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction,getPrimaAsegurada, getPrimaAseguradaNonCurrency } from "../components/services/formatFunctions.mjs"
 import ExpansionTable from '@/components/ExpansionTable.vue';
 //import { mainTable, secondaryTable, infoTable } from '@/assets/data2.mjs';
 import InfoTable from '@/components/InfoTable.vue';
@@ -62,6 +62,7 @@ const debounce = (func, wait) => {
 const onFilter = (event) => {
   filteredProducts.value = toRaw(event.filteredValue);
   animateNumber();
+  animateCurrency();
 }
 const localFilterValue = ref(filters.value.global.value);
 const updateFilter = debounce((value) => {
@@ -141,7 +142,7 @@ const startingNumber = ref(0); // Valor inicial
 
 const animateNumber = () => {
   startingNumber.value = 0;
-  const duration = 4000; // Duración total de la animación en milisegundos
+  const duration = 1000; // Duración total de la animación en milisegundos
   const startTime = performance.now();
 
   const update = (currentTime) => {
@@ -164,6 +165,45 @@ const filteredProductsCount = computed(() => {
     return 0;
   }
 });
+
+const startingCurrency = ref(0);
+const totalBalanceAmount = computed(() => {
+  if (Loader.value != true) {
+    return filteredProducts.value != undefined ? getPrimaAseguradaNonCurrency(filteredProducts.value) : 0;
+  } else {
+    return 0;
+  }
+});
+
+// Computed property para actualizar el formato de moneda automáticamente
+const formattedCurrency = computed(() => {
+  return startingCurrency.value.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+});
+
+const animateCurrency = () => {
+  startingCurrency.value = 0; // Reinicia el valor inicial
+  const duration = 1000; // Duración total de la animación en milisegundos
+  const startTime = performance.now();
+
+  const update = (currentTime) => {
+    const elapsedTime = currentTime - startTime;
+    const progress = Math.min(elapsedTime / duration, 1); // Progreso entre 0 y 1
+    startingCurrency.value = Math.floor(progress * totalBalanceAmount.value); // Actualiza el valor de `startingCurrency`
+
+    if (progress < 1) {
+      requestAnimationFrame(update); // Continua la animación
+    }
+  };
+
+  requestAnimationFrame(update); // Inicia la animación
+};
+
+const dt = ref();
+const exportCSV = () => {
+    dt.value.exportCSV();
+};
+
+/*
 const totalBalanceAmount = computed(() =>{
   if (Loader.value != true) {
     return filteredProducts.value != undefined ? getPrimaAsegurada(filteredProducts.value) : 0;
@@ -171,7 +211,7 @@ const totalBalanceAmount = computed(() =>{
     return parseFloat(0).toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
   }
 });
-
+*/
 /// Starting functions
 onMounted(async () => {
   if (produ) {
@@ -184,29 +224,33 @@ onMounted(async () => {
     products.value = formatData(MainTableRows.value)
     Loader.value = false;
     animateNumber()
+    animateCurrency()
   }, 1000);
 });
 </script>
 
 <template>
   <main class="main_selector">
-    <div class="card">
+    <div class="mt-6 card border-2 border-blue-900">
         <DataTable v-model:filters="filters"
         :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']" filterDisplay="menu"
         :value="products" sortField="estado" :sortOrder="1" stripedRows paginator :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem" :expandedRows="expandedRows"
-        dataKey="id_cotizacion" @filter="onFilter" scrollable scrollHeight="400px" stateStorage="session" stateKey="dt-state-demo-session">
+        :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem" ref="dt" :expandedRows="expandedRows"
+        @filter="onFilter" scrollable scrollHeight="400px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-demo-session">
         <template #header>
-          
           <div class="flex justify-between">
-            <Button type="button" :icon="screenMode" @click="toggleColorScheme()" />
+            <div class="flex gap-2">
+              <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button' } }" @click="toggleColorScheme()" />
+              <Button icon="pi pi-file-excel" label="Export" :pt="{ root: { class: 'my-custom-button' } }" @click="exportCSV($event)" />
+            </div>
+            
             <div class="flex justify-end gap-4">
-            <Button type="button" icon="pi pi-trash" label="Limpiar" pt:root:class="border border-solid" outlined @click="clearFilter()" />
+            <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button2' } }" outlined @click="clearFilter()" />
             <IconField>
               <InputIcon>
                 <i class="pi pi-search" />
               </InputIcon>
-              <InputText v-model="localFilterValue" placeholder="Busqueda general" />
+              <InputText v-model="localFilterValue" :pt="{ root: { class: 'my-custom-button2' } }" placeholder="Busqueda general" />
             </IconField>
           </div>
           </div>
@@ -214,7 +258,7 @@ onMounted(async () => {
         </template>
         <template #empty> No hay registros que coincidan con la busqueda </template>
         <!-- <template #loading> Cargando Información </template> -->
-        <Column expander style="width: 5rem" />
+        <Column v-if="Loader == false" expander style="width: 5rem" />
         <Column v-for="col of mainColumns" :sortable="col.field != 'acciones' ? true : false"
           :key="col.id_cotizacion" :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)">
           <template #body="{ data }">
@@ -278,7 +322,7 @@ onMounted(async () => {
             <ExpansionTable :id_record="slotProps.data.id_cotizacion" :produ="produ" @showLogsTable="showLogsTable"></ExpansionTable>
           </div>
         </template>
-        <template #footer> Numero de registros: {{ startingNumber }}. Prima asegurada por {{ totalBalanceAmount }} </template>
+        <template #footer> Numero de registros: {{ startingNumber }}. Prima asegurada por {{ formattedCurrency }} </template>
       </DataTable>
       <Dialog v-model:visible="visible" maximizable modal header="Historial de logs asociados" :style="{ width: '50rem' }" dismissableMask>
         <InfoTable v-if="visible" :id_record="logs" :produ="produ"</InfoTable>
@@ -292,6 +336,18 @@ onMounted(async () => {
 .my-custom-button {
   background-color: #1e3a8a !important; /* Green background */
   border: 1px solid #1e3a8a !important; /* Tomato border */
-  color: #cbd5e1 !important; /* White text */
+  color: #eab308 !important; /* White text */
+}
+
+.my-custom-button2 {
+  /* background-color: #1e3a8a !important;  Green background */
+  border: 1px solid #1e3a8a !important; /* Tomato border */
+  color: #eab308 !important; /* White text */
+}
+
+.my-custom-button2 {
+  /* background-color: #1e3a8a !important;  Green background */
+  /* border: 1px solid #1e3a8a !important;  Tomato border */
+  color: #eab308 !important; /* White text */
 }
 </style>

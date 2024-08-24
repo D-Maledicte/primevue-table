@@ -98,6 +98,17 @@ const getPrimaAsegurada = (data) => {
   return formatCurrency(Math.round(total * 100) / 100);
 }
 
+const getPrimaAseguradaNonCurrency = (data) => {
+  data = toRaw(data);
+  const total = data.reduce((acc, obj) => {
+    // Convertir balance a número, si es una cadena
+    const balance = parseFloat(obj.balance) || 0;
+    return acc + balance;
+  }, 0);
+  // Redondear a dos decimales
+  return total;
+}
+
 const debounce = (func, wait) => {
   let timeout;
   return function (...args) {
@@ -106,4 +117,4 @@ const debounce = (func, wait) => {
   };
 };
 
-export {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverity, getPrimaAsegurada, debounce }
+export {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverity, getPrimaAsegurada, getPrimaAseguradaNonCurrency, debounce }
