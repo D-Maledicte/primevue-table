@@ -188,7 +188,7 @@ const animateCurrency = () => {
   const update = (currentTime) => {
     const elapsedTime = currentTime - startTime;
     const progress = Math.min(elapsedTime / duration, 1); // Progreso entre 0 y 1
-    startingCurrency.value = Math.floor(progress * totalBalanceAmount.value); // Actualiza el valor de `startingCurrency`
+    startingCurrency.value = progress * totalBalanceAmount.value; // Actualiza el valor de `startingCurrency`
 
     if (progress < 1) {
       requestAnimationFrame(update); // Continua la animación
@@ -377,8 +377,8 @@ onMounted(async () => {
       </DataTable>
       <Dialog v-model:visible="visible" maximizable modal :style="{ width: '50rem' }" dismissableMask pt:root:class="!border-0 ">
         <template #container="{ closeCallback, maximizeCallback}">
-          <div class="flex flex-col px-8 py-8 gap-6 rounded-2xl overflow-auto">
-            <InfoTable v-if="visible" :id_record="logs" :produ="produ" @closeCallbackDialog="closeCallback" @maximizeCallbackDialog="maximizeCallback"/>
+          <div class="flex flex-col px-4 py-4 gap-6 rounded-lg info-table-container">
+              <InfoTable v-if="visible" :id_record="logs" :produ="produ" @closeCallbackDialog="closeCallback" @maximizeCallbackDialog="maximizeCallback"/>
           </div>
         </template>
       </Dialog>
@@ -410,5 +410,24 @@ onMounted(async () => {
   /* background-color: #1e40af !important;  Green background */
   /* border: 1px solid #1e40af !important;  Tomato border */
   color: #1e40af !important; /* White text */
+}
+
+/* Estilos para navegadores basados en WebKit/Blink (Chrome, Brave, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.info-table-container {
+  scrollbar-gutter: stable both-edges;
+  overflow: overlay;
 }
 </style>

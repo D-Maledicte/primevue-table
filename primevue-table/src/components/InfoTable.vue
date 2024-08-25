@@ -93,10 +93,7 @@ onMounted(async () => {
                   <Button icon="pi pi-times" text rounded aria-label="Close" @click="closeCallbackDialog()"/>
                   <Button icon="pi pi-window-maximize" text rounded aria-label="Close" @click="maximizeCallbackDialog()"/>
                 </div>
-                
-              
               </div>
-              
             </template>
             <template #list="slotProps">
                 <div class="flex flex-col">

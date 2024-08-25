@@ -43,7 +43,7 @@ const formatDateForDisplay = (value) => {
 
 const formatCurrency = (value) => {
     const valor = parseFloat(value)
-    return valor.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+    return valor.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2 });
 };
 
 const formatBoolean = (value) => {
