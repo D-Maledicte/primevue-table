@@ -15,6 +15,7 @@ import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import InputIcon from "primevue/inputicon";
 import Checkbox from 'primevue/checkbox';
+import Select from 'primevue/select';
 import MultiSelect from 'primevue/multiselect';
 import IconField from "primevue/iconfield";
 import DatePicker from "primevue/datepicker";
@@ -30,7 +31,8 @@ import Row from 'primevue/row';
 import Tooltip from 'primevue/tooltip';
 import Dialog from 'primevue/dialog';
 import Skeleton from 'primevue/skeleton';
-
+import Ripple from 'primevue/ripple';
+//import Fluid from 'primevue/';
 import 'primeicons/primeicons.css';
 
 
@@ -287,7 +289,8 @@ app.use(PrimeVue, {
         options: {
           darkModeSelector: '.my-app-dark',
       }
-    }
+    },
+    ripple: true
 });
 app.use(createPinia())
 app.use(router)
@@ -306,8 +309,11 @@ app.component('InputNumber', InputNumber);
 app.component('IconField', IconField);
 app.component('DatePicker', DatePicker);
 app.component('Checkbox', Checkbox);
+app.component('Select', Select);
 app.component('MultiSelect', MultiSelect);
 app.component('Dialog', Dialog);
+//app.component('Fluid', Fluid);
 app.component('Skeleton', Skeleton);
 app.directive('tooltip', Tooltip);
+app.directive('ripple', Ripple);
 app.mount('#app')

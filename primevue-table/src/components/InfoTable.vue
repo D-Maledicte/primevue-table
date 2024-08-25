@@ -11,9 +11,42 @@ const props = defineProps({
     required: true
   }
 });
+
+const emit = defineEmits(['closeCallbackDialog', 'maximizeCallbackDialog']);
+const closeCallbackDialog = () => {
+  emit('closeCallbackDialog'); // Emitimos el evento con los datos que queremos pasar al padre
+};
+const maximizeCallbackDialog = () => {
+  emit('maximizeCallbackDialog'); // Emitimos el evento con los datos que queremos pasar al padre
+};
+
 const Loader = ref(true);
 const InfoTableRows = ref();
 const products = ref(new Array(1));
+const sortKey = ref();
+const sortOrder = ref();
+const sortField = ref();
+const sortOptions = ref([
+    {label: 'Mas reciente', value: '!fecha_de_movimiento'},
+    {label: 'Mas antiguo', value: 'fecha_de_movimiento'},
+]);
+
+const onSortChange = (event) => {
+    const value = event.value.value;
+    const sortValue = event.value;
+
+    if (value.indexOf('!') === 0) {
+        sortOrder.value = -1;
+        sortField.value = value.substring(1, value.length);
+        sortKey.value = sortValue;
+    }
+    else {
+        sortOrder.value = 1;
+        sortField.value = value;
+        sortKey.value = sortValue;
+    }
+};
+
 const logFormatData = (data) => {
   var newData = data.map(item => {
     return {
@@ -50,7 +83,21 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <DataView :value="products">
+  <DataView :value="products" :sortOrder="sortOrder" :sortField="sortField">
+            <template #header>
+              <div class="flex justify-between">
+                <div>
+                  <Select v-model="sortKey" :options="sortOptions" optionLabel="label" placeholder="Ordenar por fecha" @change="onSortChange($event)" />
+                </div>
+                <div>
+                  <Button icon="pi pi-times" text rounded aria-label="Close" @click="closeCallbackDialog()"/>
+                  <Button icon="pi pi-window-maximize" text rounded aria-label="Close" @click="maximizeCallbackDialog()"/>
+                </div>
+                
+              
+              </div>
+              
+            </template>
             <template #list="slotProps">
                 <div class="flex flex-col">
                     <div v-for="(item, index) in slotProps.items" :key="index">
@@ -90,5 +137,5 @@ onMounted(async () => {
                     </div>
                 </div>
             </template>
-        </DataView>
+  </DataView>
 </template>

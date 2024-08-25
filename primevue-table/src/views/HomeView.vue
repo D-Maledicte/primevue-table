@@ -203,6 +203,40 @@ const exportCSV = () => {
     dt.value.exportCSV();
 };
 
+const getSortIcon = (sorted, sortOrder) => {
+  if (sorted == null) {
+    return 'pi pi-sort-alt';
+  } else {
+    if (sortOrder == -1) {
+      return 'pi pi-sort-amount-up';
+    } else if (sortOrder == 0) {
+      return 'pi pi-sort-alt';
+    } 
+    else {
+      return 'pi pi-sort-amount-down';
+    }
+  }
+};
+
+const getExpandIcon = (id) => {
+  const checkProp = id in expandedRows.value;
+  if (checkProp) {
+    return 'pi pi-minus';
+  } else {
+      return 'pi pi-plus';
+  }
+};
+
+const onExpandRow = (id) => {
+  const checkProp = id in expandedRows.value;
+  if (checkProp) {
+    delete expandedRows.value[id];
+  } else {
+    expandedRows.value[id] = true;
+  }
+  expandedRows.value = { ...expandedRows.value }; // Esto asegura la reactividad
+}
+
 /*
 const totalBalanceAmount = computed(() =>{
   if (Loader.value != true) {
@@ -231,26 +265,25 @@ onMounted(async () => {
 
 <template>
   <main class="main_selector">
-    <div class="mt-6 card border-2 border-blue-900">
+    <div class="mt-6 card border-2 border-blue-800">
         <DataTable v-model:filters="filters"
         :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']" filterDisplay="menu"
-        :value="products" sortField="estado" :sortOrder="1" stripedRows paginator :rows="5"
+        :value="products" stripedRows paginator :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem" ref="dt" :expandedRows="expandedRows"
         @filter="onFilter" scrollable scrollHeight="400px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-demo-session">
         <template #header>
           <div class="flex justify-between">
             <div class="flex gap-2">
               <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }" @click="toggleColorScheme()" />
-              <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
+              <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.bottom="'Exportar tabla como CSV'" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
             </div>
-            
             <div class="flex justify-end gap-4">
-            <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-main-no-background' } }" outlined @click="clearFilter()" />
+            <Button type="button" icon="pi pi-trash" label="Limpiar" v-tooltip.bottom="'Limpiar filtro'" :pt="{ root: { class: 'my-custom-button-main-no-background' } }" outlined @click="clearFilter()" />
             <IconField>
               <InputIcon>
                 <i class="pi pi-search" />
               </InputIcon>
-              <InputText v-model="localFilterValue" :pt="{ root: { class: 'my-custom-button-main-no-background' } }" placeholder="Busqueda general" />
+              <InputText v-model="localFilterValue" placeholder="Busqueda general" />
             </IconField>
           </div>
           </div>
@@ -258,9 +291,22 @@ onMounted(async () => {
         </template>
         <template #empty> No hay registros que coincidan con la busqueda </template>
         <!-- <template #loading> Cargando Información </template> -->
-        <Column v-if="Loader == false" expander style="width: 5rem" />
+        <Column v-if="Loader == false" style="width: 5rem">
+          <template #body="slotProps">
+                <div class="flex flex-center items-center justify-center w-full">
+                  <Button :icon="getExpandIcon(slotProps.data.id_cotizacion)" :pt="{ root: { class: 'my-custom-button-main-no-background-no-border' } }" text rounded aria-label="Expand" @click.stop="onExpandRow(slotProps.data.id_cotizacion)"/>
+                </div>
+          </template>
+        </Column>
         <Column v-for="col of mainColumns" :sortable="col.field != 'acciones' ? true : false"
-          :key="col.id_cotizacion" :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)">
+          :key="col.id_cotizacion" :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)" >
+          <template #filtericon>
+                <i class="pi pi-filter" v-tooltip.bottom="'Opciones de filtrado'"/>
+          </template>
+          <template #sorticon="{ sorted, sortOrder }">
+                <i :class="getSortIcon(sorted, sortOrder)" v-tooltip.bottom="'Ordenar resultados'"/>
+          </template>
+          
           <template #body="{ data }">
             <div class="flex justify-center align-center">
             <template v-if="Loader">
@@ -307,7 +353,7 @@ onMounted(async () => {
           </template>
           <template
             v-else-if="col.field != 'acciones'" 
-            #filter="{ filterModel }">
+            #filter="{ filterModel }" >
             <MultiSelect v-model="filterModel.value" :options="representatives[col.field]" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-60" placeholder="Todos">
               <template #option="slotProps">
                 <div class="flex items-center gap-2">
@@ -329,8 +375,12 @@ onMounted(async () => {
           </div>
         </template>
       </DataTable>
-      <Dialog v-model:visible="visible" maximizable modal header="Historial de logs asociados" :style="{ width: '50rem' }" dismissableMask>
-        <InfoTable v-if="visible" :id_record="logs" :produ="produ"></InfoTable>
+      <Dialog v-model:visible="visible" maximizable modal :style="{ width: '50rem' }" dismissableMask pt:root:class="!border-0 ">
+        <template #container="{ closeCallback, maximizeCallback}">
+          <div class="flex flex-col px-8 py-8 gap-6 rounded-2xl overflow-auto">
+            <InfoTable v-if="visible" :id_record="logs" :produ="produ" @closeCallbackDialog="closeCallback" @maximizeCallbackDialog="maximizeCallback"/>
+          </div>
+        </template>
       </Dialog>
     </div>
   </main>
@@ -339,20 +389,26 @@ onMounted(async () => {
 
 <style>
 .my-custom-button-main {
-  background-color: #1e3a8a !important; /* Green background */
-  border: 1px solid #1e3a8a !important; /* Tomato border */
-  color: #eab308 !important; /* White text */
+  background-color: #1e40af !important; /* Green background */
+  border: 1px solid #1e40af !important; /* Tomato border */
+  color: #e2e8f0 !important; /* White text */
 }
 
 .my-custom-button-main-no-background {
-  /* background-color: #1e3a8a !important;  Green background */
-  border: 1px solid #1e3a8a !important; /* Tomato border */
-  color: #eab308 !important; /* White text */
+  /* background-color: #1e40af !important;  Green background */
+  border: 1px solid #1e40af !important; /* Tomato border */
+  color: #1e40af !important; /* White text */
 }
 
 .my-custom-button-main-no-background-no-color {
-  /* background-color: #1e3a8a !important;  Green background */
-  /* border: 1px solid #1e3a8a !important;  Tomato border */
-  color: #eab308 !important; /* White text */
+  /* background-color: #1e40af !important;  Green background */
+  /* border: 1px solid #1e40af !important;  Tomato border */
+  color: #1e40af !important; /* White text */
+}
+
+.my-custom-button-main-no-background-no-border {
+  /* background-color: #1e40af !important;  Green background */
+  /* border: 1px solid #1e40af !important;  Tomato border */
+  color: #1e40af !important; /* White text */
 }
 </style>

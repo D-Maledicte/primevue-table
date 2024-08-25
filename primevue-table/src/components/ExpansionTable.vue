@@ -267,14 +267,14 @@ onMounted(async () => {
 
 <style>
 .my-custom-button-secondary {
-  background-color: #1e3a8a !important; /* Green background */
-  border: 1px solid #1e3a8a !important; /* Tomato border */
-  color: #cbd5e1 !important; /* White text */
+  background-color: #2563eb !important; /* Green background */
+  border: 1px solid #2563eb !important; /* Tomato border */
+  color: #e2e8f0 !important; /* White text */
 }
 
 .my-custom-button-secondary-no-background {
-  /* background-color: #1e3a8a !important;  Green background */
-  border: 1px solid #1e3a8a !important; /* Tomato border */
-  color: #cbd5e1 !important; /* White text */
+  /* background-color: #2563eb !important;  Green background */
+  border: 1px solid #2563eb !important; /* Tomato border */
+  color: #1d4ed8 !important; /* White text */
 }
 </style>
