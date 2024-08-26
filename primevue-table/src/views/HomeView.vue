@@ -67,7 +67,7 @@ const onFilter = (event) => {
 const localFilterValue = ref(filters.value.global.value);
 const updateFilter = debounce((value) => {
       filters.value.global.value = value;
-    }, 5000);
+    }, 1000);
 watch(localFilterValue, (newValue) => {
       updateFilter(newValue);
 });
@@ -334,10 +334,12 @@ onMounted(async () => {
               </div>
             </template>
             <template v-else>
-              {{
-                col.field == "fecha_creacion" || col.field == 'fecha_cierre' ? formatDateForDisplay(data[col.field]) :
-                  data[col.field]
-              }}
+              <div class="flex justify-center align-center w-full h-4/5">
+                <p class="w-full h-1/5 text-md text-center">
+                  {{ col.field == "fecha_creacion" || col.field == 'fecha_cierre' ? formatDateForDisplay(data[col.field]) :
+                  data[col.field] }}
+                </p>
+              </div>
             </template>
             </template>
           </div>
