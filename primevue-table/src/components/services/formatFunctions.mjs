@@ -114,10 +114,10 @@ const getSeveritySecondary = (option) => {
 
 const getSeverityLogs = (product) => {
   switch (product.direccion) {
-      case 'Entrante':
+      case 'Saliente':
           return 'success';
 
-      case 'Saliente':
+      case 'Entrante':
           return 'warn';
       default:
           return null;

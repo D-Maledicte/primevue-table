@@ -5,6 +5,7 @@ import {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filte
 import ExpansionTable from '@/components/ExpansionTable.vue';
 //import { mainTable, secondaryTable, infoTable } from '@/assets/data2.mjs';
 import InfoTable from '@/components/InfoTable.vue';
+
 ///Main deploy segmentation
 const produ = false;
 /// Visual effects
@@ -13,7 +14,11 @@ const toggleColorScheme = () => {
     const element = document.querySelector('html');
     element.classList.toggle('my-app-dark');
     screenMode.value = screenMode.value == "pi pi-sun"? "pi pi-moon" : "pi pi-sun";
-}
+};
+const dropdownDirection = {
+  top: 'auto',
+  bottom: '100%', // Esto hará que el dropdown se abra hacia arriba
+};
 const Loader = ref(true);
 
 const formatData = (data) => {
@@ -237,6 +242,8 @@ const onExpandRow = (id) => {
   expandedRows.value = { ...expandedRows.value }; // Esto asegura la reactividad
 };
 
+
+
 /*
 const totalBalanceAmount = computed(() =>{
   if (Loader.value != true) {
@@ -265,7 +272,7 @@ onMounted(async () => {
 
 <template>
   <main class="main_selector">
-    <div class="mt-6 card border-2 border-blue-800">
+    <div class="mt-6 card border-2 border-blue-800" >
         <DataTable v-model:filters="filters"
         :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']" filterDisplay="menu"
         :value="products" stripedRows paginator :rows="5"
@@ -329,8 +336,8 @@ onMounted(async () => {
             
             </template>
             <template v-else-if="col.field == 'estado'">
-              <div class="flex justify-center align-center w-4/5 h-4/5">
-                <Tag :value="data[col.field]" class="w-full h-1/5" v-bind="getSeverityMain(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeverityMain(data[col.field])}"></Tag>
+              <div class="flex justify-center align-center w-full h-4/5">
+                <Tag :value="data[col.field]" class="w-full h-1/5 text-nowrap" v-bind="getSeverityMain(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeverityMain(data[col.field])}"></Tag>
               </div>
             </template>
             <template v-else>
@@ -426,6 +433,11 @@ onMounted(async () => {
   background-color : #f1f5f9 !important;
   color: #334155 !important;
 }
+
+.info-table-container {
+  scrollbar-gutter: stable both-edges;
+  overflow: overlay;
+}
 /* Estilos para navegadores basados en WebKit/Blink (Chrome, Brave, Edge, Safari) */
 ::-webkit-scrollbar {
     width: 6px;
@@ -440,8 +452,5 @@ onMounted(async () => {
     border-radius: 10px;
 }
 
-.info-table-container {
-  scrollbar-gutter: stable both-edges;
-  overflow: overlay;
-}
+
 </style>

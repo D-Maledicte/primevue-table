@@ -68,6 +68,8 @@ const filterByPedido = (id_pedido, data) => {
   });
   return logFormatData(filteredInfoRows)
 };
+
+
 onMounted(async () => {
   if (props.produ) {
     InfoTableRows.value = await fetchData("http://localhost:3000/api/infoTable/" + props.id_record);
@@ -83,7 +85,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <DataView :value="products" :sortOrder="sortOrder" :sortField="sortField">
+  <DataView :value="products" :sortOrder="sortOrder" :sortField="sortField" id="info-table">
             <template #header>
               <div class="flex justify-between">
                 <div>
@@ -96,7 +98,7 @@ onMounted(async () => {
               </div>
             </template>
             <template #list="slotProps">
-                <div class="flex flex-col">
+                <div class="flex flex-col" >
                     <div v-for="(item, index) in slotProps.items" :key="index">
                         <template v-if="Loader">
                           <div class="flex flex-col sm:flex-row sm:items-center p-6 gap-4" :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }">

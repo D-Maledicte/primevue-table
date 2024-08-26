@@ -122,27 +122,23 @@ function generateData(samples) {
     const mainRow = generateMainTableRow();
     mainTable.push(mainRow);
 
-    // Almacenar los id_pedido en un array temporal
-    const idPedidos = [];
-    const numSecondaryRows = faker.number.int({ min: 1, max: 40 });
+    const numSecondaryRows = faker.number.int({ min: 3, max: 10 });
     for (let j = 0; j < numSecondaryRows; j++) {
       const secondaryRow = generateSecondaryTableRow(mainRow.id_cotizacion);
       secondaryTable.push(secondaryRow);
-      idPedidos.push(secondaryRow.id_pedido); // Guardar id_pedido para asociar en infoTable
-    }
 
-    // Generar filas para infoTable asociadas a id_pedido
-    const numInfoRows = faker.number.int({ min: 1, max: 50 });
-    for (let j = 0; j < numInfoRows; j++) {
-      const randomIdPedido = faker.helpers.arrayElement(idPedidos); // Elegir un id_pedido aleatorio
-      infoTable.push(generateInfoTableRow(randomIdPedido));
+      // Generar entre 1 y 50 logs por cada id_pedido
+      const numInfoRows = faker.number.int({ min: 3, max: 15 });
+      for (let k = 0; k < numInfoRows; k++) {
+        infoTable.push(generateInfoTableRow(secondaryRow.id_pedido));
+      }
     }
   }
 
   return { mainTable, secondaryTable, infoTable };
 }
 
-const data = generateData(1250);
+const data = generateData(1000);
 
 
 //fs.writeFileSync('data.json', JSON.stringify(data, null, 2), 'utf8');
@@ -156,6 +152,6 @@ export { mainTable, secondaryTable, infoTable };
 `;
 
 // Escribir el archivo .mjs
-fs.writeFileSync('dataset.mjs', mjsContent, 'utf8');
+fs.writeFileSync('dataset2.mjs', mjsContent, 'utf8');
 
 console.log('Datos generados y guardados en data.json');

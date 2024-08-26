@@ -227,7 +227,7 @@ onMounted(async () => {
                     </div>
                   </template>
                   <template v-else-if="col.field == 'estado'">
-              <div class="flex justify-center align-center w-4/5 h-4/5">
+              <div class="flex justify-center align-center w-full h-4/5">
                 <Tag :value="data[col.field]" class="w-full h-1/5" v-bind="getSeveritySecondary(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeveritySecondary(data[col.field])}"></Tag>
               </div>
             </template>
