@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, toRaw, computed} from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction,getPrimaAsegurada, getPrimaAseguradaNonCurrency } from "../components/services/formatFunctions.mjs"
+import {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getPrimaAseguradaNonCurrency } from "../components/services/formatFunctions.mjs"
 import ExpansionTable from '@/components/ExpansionTable.vue';
 //import { mainTable, secondaryTable, infoTable } from '@/assets/data2.mjs';
 import InfoTable from '@/components/InfoTable.vue';
@@ -182,7 +182,7 @@ const formattedCurrency = computed(() => {
 
 const animateCurrency = () => {
   startingCurrency.value = 0; // Reinicia el valor inicial
-  const duration = 1000; // Duración total de la animación en milisegundos
+  const duration = 2000; // Duración total de la animación en milisegundos
   const startTime = performance.now();
 
   const update = (currentTime) => {
@@ -235,7 +235,7 @@ const onExpandRow = (id) => {
     expandedRows.value[id] = true;
   }
   expandedRows.value = { ...expandedRows.value }; // Esto asegura la reactividad
-}
+};
 
 /*
 const totalBalanceAmount = computed(() =>{
@@ -251,7 +251,7 @@ onMounted(async () => {
   if (produ) {
     MainTableRows.value = await fetchData("http://localhost:3000/api/mainTable/");
   } else {
-    const { mainTable } = await import('@/assets/data2.mjs');
+    const { mainTable } = await import('@/assets/dataset.mjs');
     MainTableRows.value = mainTable;
   }
   setTimeout(() => {
@@ -269,7 +269,7 @@ onMounted(async () => {
         <DataTable v-model:filters="filters"
         :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']" filterDisplay="menu"
         :value="products" stripedRows paginator :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem" ref="dt" :expandedRows="expandedRows"
+        :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 60rem; width: 60rem" ref="dt" :expandedRows="expandedRows"
         @filter="onFilter" scrollable scrollHeight="400px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-demo-session">
         <template #header>
           <div class="flex justify-between">
@@ -291,11 +291,16 @@ onMounted(async () => {
         </template>
         <template #empty> No hay registros que coincidan con la busqueda </template>
         <!-- <template #loading> Cargando Información </template> -->
-        <Column v-if="Loader == false" style="width: 5rem">
+        <Column style="width: 5rem">
           <template #body="slotProps">
-                <div class="flex flex-center items-center justify-center w-full">
+            <template v-if="Loader">
+              <Skeleton></Skeleton>
+            </template>
+            <template v-else>
+              <div class="flex flex-center items-center justify-center w-full">
                   <Button :icon="getExpandIcon(slotProps.data.id_cotizacion)" :pt="{ root: { class: 'my-custom-button-main-no-background-no-border' } }" text rounded aria-label="Expand" @click.stop="onExpandRow(slotProps.data.id_cotizacion)"/>
                 </div>
+            </template>
           </template>
         </Column>
         <Column v-for="col of mainColumns" :sortable="col.field != 'acciones' ? true : false"
@@ -323,11 +328,10 @@ onMounted(async () => {
               {{ formatCurrency(data.balance) }}
             
             </template>
-            <template v-else-if="col.field == 'aviso'">
-              
-                <i class="pi"
-                :class="{ 'pi-check-circle text-red-500 ': data[col.field], 'pi-circle': !data[col.field] }"></i>
-              
+            <template v-else-if="col.field == 'estado'">
+              <div class="flex justify-center align-center w-4/5 h-4/5">
+                <Tag :value="data[col.field]" class="w-full h-1/5" v-bind="getSeverityMain(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeverityMain(data[col.field])}"></Tag>
+              </div>
             </template>
             <template v-else>
               {{
@@ -356,9 +360,14 @@ onMounted(async () => {
             #filter="{ filterModel }" >
             <MultiSelect v-model="filterModel.value" :options="representatives[col.field]" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-60" placeholder="Todos">
               <template #option="slotProps">
-                <div class="flex items-center gap-2">
-                  <span>{{ slotProps.option }}</span>
+                <template v-if="col.field == 'estado'">
+                  <div class="flex items-center gap-2">
+                    <Tag :value="slotProps.option" v-bind="getSeverityMain(slotProps.option) == null? { class: 'severity-null'} : { severity: getSeverityMain(slotProps.option)}"></Tag>
                 </div>
+                </template>
+                <template v-else>
+                  <span>{{ slotProps.option }}</span>
+                </template>
               </template>
             </MultiSelect>
           </template>
@@ -387,7 +396,7 @@ onMounted(async () => {
 
 </template>
 
-<style>
+<style scoped>
 .my-custom-button-main {
   background-color: #1e40af !important; /* Green background */
   border: 1px solid #1e40af !important; /* Tomato border */
@@ -405,13 +414,16 @@ onMounted(async () => {
   /* border: 1px solid #1e40af !important;  Tomato border */
   color: #1e40af !important; /* White text */
 }
-
 .my-custom-button-main-no-background-no-border {
   /* background-color: #1e40af !important;  Green background */
   /* border: 1px solid #1e40af !important;  Tomato border */
   color: #1e40af !important; /* White text */
 }
 
+.severity-null {
+  background-color : #f1f5f9 !important;
+  color: #334155 !important;
+}
 /* Estilos para navegadores basados en WebKit/Blink (Chrome, Brave, Edge, Safari) */
 ::-webkit-scrollbar {
     width: 6px;

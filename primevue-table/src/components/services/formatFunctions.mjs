@@ -75,7 +75,44 @@ const filters_distinction = (field) => {
   return expectedFilter
 };
 
-const getSeverity = (product) => {
+const getSeverityMain = (option) => {
+    if (option == 'Sin contactar' || option == 'Esperando respuesta') {
+      return 'info';
+    }
+    else if (option == 'Recibimos respuesta' || option == 'Cerrado perdido') {
+      return 'danger';
+    }
+    else if (option == 'Negociacion Avanzada') {
+      return 'warn';
+    }
+    else if (option == 'Cerrado ganado') {
+      return 'success';
+    }
+    else {
+      return null;
+    }
+}
+
+const getSeveritySecondary = (option) => {
+  if (option == 'Sin contactar' || option == 'Esperando respuesta') {
+    return 'info';
+  }
+  else if (option == 'Recibimos respuesta' || option == 'Cerrado perdido' || option == 'Respuesta recibida') {
+    return 'danger';
+  }
+  else if (option == 'Negociacion Avanzada') {
+    return 'warn';
+  }
+  else if (option == 'Cerrado ganado') {
+    return 'success';
+  }
+  else {
+    return null;
+  }
+}
+
+
+const getSeverityLogs = (product) => {
   switch (product.direccion) {
       case 'Entrante':
           return 'success';
@@ -86,6 +123,8 @@ const getSeverity = (product) => {
           return null;
   }
 };
+
+
 
 const getPrimaAsegurada = (data) => {
   data = toRaw(data);
@@ -117,4 +156,4 @@ const debounce = (func, wait) => {
   };
 };
 
-export {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverity, getPrimaAsegurada, getPrimaAseguradaNonCurrency, debounce }
+export {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getSeveritySecondary, getSeverityLogs, getPrimaAsegurada, getPrimaAseguradaNonCurrency, debounce }

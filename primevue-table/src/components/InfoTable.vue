@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { fetchData,formatDateForDisplay,formatDateString, getSeverity } from "./services/formatFunctions.mjs";
+import { fetchData,formatDateForDisplay,formatDateString, getSeverityLogs } from "./services/formatFunctions.mjs";
 const props = defineProps({
   id_record: {
     type: String,
@@ -73,7 +73,7 @@ onMounted(async () => {
     InfoTableRows.value = await fetchData("http://localhost:3000/api/infoTable/" + props.id_record);
     InfoTableRows.value = logFormatData(InfoTableRows.value);
   } else {
-    const { infoTable } = await import('@/assets/data2.mjs');
+    const { infoTable } = await import('@/assets/dataset.mjs');
     InfoTableRows.value = filterByPedido(props.id_record, infoTable);
   }
   setTimeout(() => {
@@ -116,8 +116,9 @@ onMounted(async () => {
                                 <div class="flex flex-row md:flex-col justify-between items-start gap-2">
                                     <Fieldset>
                                         <template #legend>
-                                            <div class="flex items-center">
-                                              <Tag :value="item.direccion" :severity="getSeverity(item)"></Tag>
+                                            <div class="flex flex-row items-center gap-2">
+                                              <Tag :value="item.direccion" :severity="getSeverityLogs(item)"></Tag>
+                                              <Tag :value="item.tipo" class="font-semibold severity-null"></Tag>
                                             </div>
                                         </template>
                                         <p class="text-lg font-medium mt-2">
@@ -125,8 +126,10 @@ onMounted(async () => {
                                         </p>
                                     </Fieldset>
                                 </div>
-                                <div class="flex flex-col md:items-end gap-8">
-                                  <Tag icon="pi pi-calendar" :value="formatDateForDisplay(item.fecha_de_movimiento)" class="text-xl font-semibold"></Tag>
+                                <div class="flex flex-col md:items-end gap-4 max-w-24">
+                                  <div class="w-full flex justify-center">
+                                    <Tag icon="pi pi-calendar" :value="formatDateForDisplay(item.fecha_de_movimiento)" class="text-xl font-semibold"></Tag>
+                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -136,3 +139,14 @@ onMounted(async () => {
             </template>
   </DataView>
 </template>
+
+<style scoped>
+.severity-null {
+  background-color : #f1f5f9;
+  color: #334155;
+}
+
+/* 
+
+*/ 
+</style>

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, toRaw, computed } from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import {fetchData, formatDateString, formatDateForDisplay, filters_distinction } from "./services/formatFunctions.mjs";
+import {fetchData, formatDateString, formatDateForDisplay, filters_distinction, getSeveritySecondary } from "./services/formatFunctions.mjs";
 const props = defineProps({
   id_record: {
     type: String, // o el tipo de dato correcto
@@ -168,7 +168,7 @@ onMounted(async () => {
     SecondaryTableRows.value = await fetchData("http://localhost:3000/api/secondaryTable/" + props.id_record);
     SecondaryTableRows.value = secondaryFormatData(SecondaryTableRows.value);
   } else {
-    const { secondaryTable } = await import('@/assets/data2.mjs');
+    const { secondaryTable } = await import('@/assets/dataset.mjs');
     SecondaryTableRows.value = filterByCotizacion(props.id_record, secondaryTable);
   }
   animateNumber(); 
@@ -224,6 +224,11 @@ onMounted(async () => {
                     <i class="pi"
                       :class="{ 'pi-check-circle text-red-500 ': data[col.field], 'pi-circle': !data[col.field] }"></i>
                   </template>
+                  <template v-else-if="col.field == 'estado'">
+              <div class="flex justify-center align-center w-4/5 h-4/5">
+                <Tag :value="data[col.field]" class="w-full h-1/5" v-bind="getSeveritySecondary(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeveritySecondary(data[col.field])}"></Tag>
+              </div>
+            </template>
                   <template v-else>
                     {{
                       col.field == "fecha_bloqueo" || col.field == 'fecha_cot_esp' ? formatDateForDisplay(data[col.field])
@@ -250,9 +255,14 @@ onMounted(async () => {
                   #filter="{ filterModel }">
                   <MultiSelect v-model="filterModel.value" :options="secondaryRepresentatives[col.field]" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-60" placeholder="Todos">
                     <template #option="slotProps">
-                      <div class="flex items-center gap-2">
-                        <span>{{ slotProps.option }}</span>
-                      </div>
+                      <template v-if="col.field == 'estado'">
+                  <div class="flex items-center gap-2">
+                    <Tag :value="slotProps.option" v-bind="getSeveritySecondary(slotProps.option) == null? { class: 'severity-null'} : { severity: getSeveritySecondary(slotProps.option)}"></Tag>
+                </div>
+                </template>
+                <template v-else>
+                  <span>{{ slotProps.option }}</span>
+                </template>
                     </template>
                   </MultiSelect>
                 </template>
@@ -265,7 +275,7 @@ onMounted(async () => {
   </DataTable>
 </template>
 
-<style>
+<style scoped>
 .my-custom-button-secondary {
   background-color: #2563eb !important; /* Green background */
   border: 1px solid #2563eb !important; /* Tomato border */
@@ -276,5 +286,10 @@ onMounted(async () => {
   /* background-color: #2563eb !important;  Green background */
   border: 1px solid #2563eb !important; /* Tomato border */
   color: #1d4ed8 !important; /* White text */
+}
+
+.severity-null {
+  background-color : #f1f5f9 !important;
+  color: #334155 !important;
 }
 </style>
