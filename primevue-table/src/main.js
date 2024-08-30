@@ -29,6 +29,8 @@ import ColumnGroup from 'primevue/columngroup';
 import Column from 'primevue/column';
 import Row from 'primevue/row';
 // Addons visuales
+import Panel from 'primevue/panel';
+import Card from 'primevue/card';
 import Tooltip from 'primevue/tooltip';
 import Dialog from 'primevue/dialog';
 import Skeleton from 'primevue/skeleton';
@@ -38,6 +40,7 @@ import Popover from 'primevue/popover';
 //import ConfirmationService from 'primevue/confirmationservice';
 //import Fluid from 'primevue/';
 import 'primeicons/primeicons.css';
+
 
 
 const Blue = definePreset(Aura, {
@@ -317,6 +320,8 @@ app.component('DatePicker', DatePicker);
 app.component('Checkbox', Checkbox);
 app.component('Select', Select);
 app.component('MultiSelect', MultiSelect);
+app.component('Panel', Panel);
+app.component('Card', Card);
 app.component('Dialog', Dialog);
 app.component('Popover', Popover);
 /*app.component('ConfirmPopup', ConfirmPopup);*/

@@ -12,6 +12,7 @@ const props = defineProps({
     required: true
   }
 });
+
 const emit = defineEmits(['showLogsTable']);
 const emitShowLogsTable = (data) => {
   emit('showLogsTable', data); // Emitimos el evento con los datos que queremos pasar al padre

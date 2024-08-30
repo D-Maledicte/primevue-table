@@ -152,6 +152,6 @@ export { mainTable, secondaryTable, infoTable };
 `;
 
 // Escribir el archivo .mjs
-fs.writeFileSync('dataset2.mjs', mjsContent, 'utf8');
+fs.writeFileSync('dataset.mjs', mjsContent, 'utf8');
 
 console.log('Datos generados y guardados en data.json');

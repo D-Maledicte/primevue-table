@@ -12,8 +12,6 @@ const props = defineProps({
     required: true
   }
 });
-
-
 const emit = defineEmits(['closeCallbackDialog', 'maximizeCallbackDialog']);
 const closeCallbackDialog = () => {
   emit('closeCallbackDialog'); // Emitimos el evento con los datos que queremos pasar al padre

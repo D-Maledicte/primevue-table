@@ -1,3 +1,4 @@
+// @ts-nocheck
 {
   "compilerOptions": {
     "paths": {
@@ -10,6 +11,7 @@
     "./src/assets/data.mjs",
     "./src/assets/data3.mjs",
     "./src/assets/seed_generator.cjs",
+    "./src/assets/seed_generator_clients.cjs",
     "./src/assets/Seeds.mjs",
     "./src/assets/Seeds2.mjs"
   ]

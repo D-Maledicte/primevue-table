@@ -75,6 +75,17 @@ const filters_distinction = (field) => {
   return expectedFilter
 };
 
+const filters_distinction_clients = (field) => {
+  let expectedFilter = { showFilterMatchModes: false, filterMenuStyle: "{ width: '14rem' }" };
+  if (field.includes("fecha")) {
+    return expectedFilter = { filterField: field, dataType: 'date' }
+  }
+  if (field === "nombre" || field === "apellido" || field === "email") {
+    return expectedFilter = { filterMenuStyle: "{ width: '14rem' }" }
+  }
+  return expectedFilter
+};
+
 const getSeverityMain = (option) => {
     if (option == 'Sin contactar' || option == 'Esperando respuesta') {
       return 'info';
@@ -160,4 +171,4 @@ const areObjectsEqual = (obj1, obj2) => {
   return JSON.stringify(obj1) === JSON.stringify(obj2);
 }
 
-export {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getSeveritySecondary, getSeverityLogs, getPrimaAsegurada, getPrimaAseguradaNonCurrency, debounce, areObjectsEqual }
+export {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, filters_distinction_clients, getSeverityMain, getSeveritySecondary, getSeverityLogs, getPrimaAsegurada, getPrimaAseguradaNonCurrency, debounce, areObjectsEqual }
