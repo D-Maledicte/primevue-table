@@ -156,4 +156,8 @@ const debounce = (func, wait) => {
   };
 };
 
-export {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getSeveritySecondary, getSeverityLogs, getPrimaAsegurada, getPrimaAseguradaNonCurrency, debounce }
+const areObjectsEqual = (obj1, obj2) => {
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+
+export {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getSeveritySecondary, getSeverityLogs, getPrimaAsegurada, getPrimaAseguradaNonCurrency, debounce, areObjectsEqual }

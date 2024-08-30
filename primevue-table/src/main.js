@@ -11,6 +11,7 @@ import { definePreset } from '@primevue/themes';
 // Addons de campos base
 import Button from "primevue/button";
 import ButtonGroup from 'primevue/buttongroup';
+import FloatLabel from 'primevue/floatlabel';
 import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import InputIcon from "primevue/inputicon";
@@ -32,6 +33,9 @@ import Tooltip from 'primevue/tooltip';
 import Dialog from 'primevue/dialog';
 import Skeleton from 'primevue/skeleton';
 import Ripple from 'primevue/ripple';
+import Popover from 'primevue/popover';
+//import ConfirmPopup from 'primevue/confirmpopup';
+//import ConfirmationService from 'primevue/confirmationservice';
 //import Fluid from 'primevue/';
 import 'primeicons/primeicons.css';
 
@@ -290,10 +294,11 @@ app.use(PrimeVue, {
           darkModeSelector: '.my-app-dark',
       }
     },
-    ripple: true
+    ripple: true,
 });
-app.use(createPinia())
-app.use(router)
+//app.use(ConfirmationService);
+app.use(createPinia());
+app.use(router);
 app.component('DataTable', DataTable);
 app.component('DataView', DataView);
 app.component('Column', Column);
@@ -303,6 +308,7 @@ app.component('Button', Button);
 app.component('Tag', Tag);
 app.component('Fieldset', Fieldset);
 app.component('ButtonGroup', ButtonGroup);
+app.component('FloatLabel', FloatLabel);
 app.component('InputText', InputText);
 app.component('InputIcon', InputIcon);
 app.component('InputNumber', InputNumber);
@@ -312,6 +318,8 @@ app.component('Checkbox', Checkbox);
 app.component('Select', Select);
 app.component('MultiSelect', MultiSelect);
 app.component('Dialog', Dialog);
+app.component('Popover', Popover);
+/*app.component('ConfirmPopup', ConfirmPopup);*/
 //app.component('Fluid', Fluid);
 app.component('Skeleton', Skeleton);
 app.directive('tooltip', Tooltip);

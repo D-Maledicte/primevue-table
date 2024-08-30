@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, toRaw, computed } from 'vue';
+//import { useConfirm } from "primevue/useconfirm";
 import { fetchData,formatDateForDisplay,formatDateString, getSeverityLogs } from "./services/formatFunctions.mjs";
 const props = defineProps({
   id_record: {
@@ -12,6 +13,7 @@ const props = defineProps({
   }
 });
 
+
 const emit = defineEmits(['closeCallbackDialog', 'maximizeCallbackDialog']);
 const closeCallbackDialog = () => {
   emit('closeCallbackDialog'); // Emitimos el evento con los datos que queremos pasar al padre
@@ -19,10 +21,16 @@ const closeCallbackDialog = () => {
 const maximizeCallbackDialog = () => {
   emit('maximizeCallbackDialog'); // Emitimos el evento con los datos que queremos pasar al padre
 };
-
+//const confirm = useConfirm();
+const popover = ref();
 const Loader = ref(true);
+const filtered = ref(false);
 const InfoTableRows = ref();
 const products = ref(new Array(1));
+const filteredLogsProducts = ref();
+const infoTableDateSelector = ref();
+const infoTableTypeSelector = ref();
+const logsRepresentatives = ref();
 const sortKey = ref();
 const sortOrder = ref();
 const sortField = ref();
@@ -54,6 +62,7 @@ const logFormatData = (data) => {
       fecha_de_movimiento: formatDateString(item.fecha_de_movimiento)
     };
   });
+  logsRepresentatives.value = updateLogsRepresentatives(data);
   return newData
 };
 const filterByPedido = (id_pedido, data) => { 
@@ -69,7 +78,93 @@ const filterByPedido = (id_pedido, data) => {
   return logFormatData(filteredInfoRows)
 };
 
+const toggle = (event) => {
+  popover.value.toggle(event);
+};
 
+const applyFilterPopover = () => {
+  filteredLogsProducts.value = applyFilter(products.value, infoTableTypeSelector.value, infoTableDateSelector.value)
+  filtered.value = true;
+  setTimeout(() => {
+    popover.value.hide(); // Oculta el popover después de un pequeño retraso
+  }, 100);
+};
+
+const deleteFilterPopover = () => {
+  filtered.value = false;
+  infoTableDateSelector.value = [];
+  infoTableTypeSelector.value = [];
+  setTimeout(() => {
+    popover.value.hide(); // Oculta el popover después de un pequeño retraso
+  }, 100);
+};
+
+const applyFilter = (data, typeFilterArray, dateRangeArray) => {
+
+  const hasTypeFilterArray = typeFilterArray !== undefined && typeFilterArray !== null && typeFilterArray.length > 0;
+  const hasDateRangeArray = dateRangeArray !== undefined && dateRangeArray !== null && dateRangeArray.length > 0;
+  
+  // Verifica que los filtros no estén vacíos
+  if (hasTypeFilterArray) {
+    // Filtra por tipo
+    data = data.filter(item => typeFilterArray.includes(item.tipo));
+  }
+
+  if (hasDateRangeArray) {
+    const [startDate, endDate] = dateRangeArray.map(date => new Date(date).getTime());
+
+    // Filtra por rango de fechas
+    data = data.filter(item => {
+      const itemDate = new Date(item.fecha_de_movimiento).getTime();
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  }
+
+  return data;
+};
+
+
+const updateLogsRepresentatives = (data) => {
+  const newRepresentatives = {
+    tipo: [],
+  };
+
+  data.forEach(item => {
+    if (!newRepresentatives.tipo.includes(item.tipo)) {
+      newRepresentatives.tipo.push(item.tipo);
+    }
+  });
+
+  // Sorting the arrays (optional)
+  newRepresentatives.tipo.sort();
+  // newRepresentatives.riesgo.sort();
+  // newRepresentatives.tomador.sort();
+
+  return newRepresentatives;
+};
+
+const getProducts = computed(() => {
+  if (filtered.value == true) {
+    return filteredLogsProducts.value;
+  } else {
+    return products.value;
+  }
+});
+/*
+const showTemplate = (event) => {
+    confirm.require({
+        target: event.currentTarget,
+        group: 'headless',
+        message: 'Please confirm to proceed moving forward.',
+        accept: () => {
+            console.log("Success");
+        },
+        reject: () => {
+            console.log("Failure");
+        }
+    });
+}
+*/
 onMounted(async () => {
   if (props.produ) {
     InfoTableRows.value = await fetchData("http://localhost:3000/api/infoTable/" + props.id_record);
@@ -85,15 +180,38 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <DataView :value="products" :sortOrder="sortOrder" :sortField="sortField" id="info-table">
+  <DataView :value="getProducts" :sortOrder="sortOrder" :sortField="sortField" id="info-table">
             <template #header>
               <div class="flex justify-between">
-                <div>
-                  <Select v-model="sortKey" :options="sortOptions" optionLabel="label" placeholder="Ordenar por fecha" @change="onSortChange($event)" />
+                <div class="flex flex-row justify-between gap-4">
+                  <Select v-model="sortKey" :options="sortOptions" class="w-52" optionLabel="label" placeholder="Ordenar por fecha" @change="onSortChange($event)" />
+                  <Button type="button" icon="pi pi-filter" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="toggle" v-tooltip.bottom="'Opciones de filtrado'"/>
+                  <Popover ref="popover">
+                        <div class="flex flex-col justify-between rounded p-0.5 gap-6 mt-6">
+                          <FloatLabel>
+                            <MultiSelect id="type_selector" v-model="infoTableTypeSelector" :options="logsRepresentatives.tipo" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-56">
+                                <template #option="slotProps">
+                                  <div class="flex items-center gap-2">
+                                      <Tag :value="slotProps.option" v-bind="getSeverityLogs(slotProps.option) == null? { class: 'severity-null'} : { severity: getSeverityLogs(slotProps.option)}"></Tag>
+                                  </div>
+                                </template>
+                            </MultiSelect>
+                            <label for="type_selector">Filtrar por tipo</label>
+                          </FloatLabel>
+                          <FloatLabel>
+                            <DatePicker v-model="infoTableDateSelector" selectionMode="range" :manualInput="false" inputId="date_selector" class="w-56"/>
+                            <label for="date_selector">Filtrar por fecha</label>
+                          </FloatLabel>
+                          <div class="flex items-end justify-end gap-6">
+                            <Button icon="pi pi-trash" text rounded aria-label="Close" @click="deleteFilterPopover" v-tooltip.bottom="'Borrar filtros'"></Button>
+                            <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterPopover" v-tooltip.bottom="'Aplicar filtros'"></Button>
+                          </div>
+                        </div>
+                  </Popover>
                 </div>
                 <div>
-                  <Button icon="pi pi-times" text rounded aria-label="Close" @click="closeCallbackDialog()"/>
-                  <Button icon="pi pi-window-maximize" text rounded aria-label="Close" @click="maximizeCallbackDialog()"/>
+                  <Button icon="pi pi-times" text rounded aria-label="Close" @click="closeCallbackDialog()" v-tooltip.bottom="'Cerrar logs'"/>
+                  <Button icon="pi pi-window-maximize" text rounded aria-label="Close" @click="maximizeCallbackDialog()" v-tooltip.bottom="'Maximizar tablero'"/>
                 </div>
               </div>
             </template>
@@ -148,6 +266,11 @@ onMounted(async () => {
   color: #334155;
 }
 
+.my-custom-button-secondary-no-background {
+  /* background-color: #2563eb !important;  Green background */
+  border: 1px solid #2563eb !important; /* Tomato border */
+  color: #1d4ed8 !important; /* White text */
+}
 /* 
 
 */ 

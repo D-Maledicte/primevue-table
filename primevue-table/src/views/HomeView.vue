@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, toRaw, computed} from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getPrimaAseguradaNonCurrency } from "../components/services/formatFunctions.mjs"
+import {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getPrimaAseguradaNonCurrency, areObjectsEqual } from "../components/services/formatFunctions.mjs"
 import ExpansionTable from '@/components/ExpansionTable.vue';
 //import { mainTable, secondaryTable, infoTable } from '@/assets/data2.mjs';
 import InfoTable from '@/components/InfoTable.vue';
@@ -14,10 +14,6 @@ const toggleColorScheme = () => {
     const element = document.querySelector('html');
     element.classList.toggle('my-app-dark');
     screenMode.value = screenMode.value == "pi pi-sun"? "pi pi-moon" : "pi pi-sun";
-};
-const dropdownDirection = {
-  top: 'auto',
-  bottom: '100%', // Esto hará que el dropdown se abra hacia arriba
 };
 const Loader = ref(true);
 
@@ -66,8 +62,7 @@ const debounce = (func, wait) => {
 };
 const onFilter = (event) => {
   filteredProducts.value = toRaw(event.filteredValue);
-  animateNumber();
-  animateCurrency();
+  
 }
 const localFilterValue = ref(filters.value.global.value);
 const updateFilter = debounce((value) => {
@@ -76,6 +71,7 @@ const updateFilter = debounce((value) => {
 watch(localFilterValue, (newValue) => {
       updateFilter(newValue);
 });
+
 /// Navigation process
 const procesarOperacion = (target) => {
   let titulo = target.titulo;
@@ -95,9 +91,18 @@ const showLogsTable = (data) => {
 };
 
 /// Data Gathering
+const initialized = ref(false);
 const MainTableRows = ref();
 const products = ref(new Array(5));
 const filteredProducts = ref();
+watch(filteredProducts, (newValue, oldValue) => {
+      if (initialized.value) {
+      if (areObjectsEqual(newValue, oldValue) == false) {
+        animateNumber();
+        animateCurrency();
+      }
+    }
+});
 const logs = ref();
 const visible = ref(false);
 const expandedRows = ref({});
@@ -143,23 +148,19 @@ const updateRepresentatives = (data) => {
 };
 
 const startingNumber = ref(0); // Valor inicial
-//const formattedAmount = ref(formatCurrency(startingNumber.value)); // Número formateado
 
 const animateNumber = () => {
   startingNumber.value = 0;
   const duration = 1000; // Duración total de la animación en milisegundos
   const startTime = performance.now();
-
   const update = (currentTime) => {
     const elapsedTime = currentTime - startTime;
     const progress = Math.min(elapsedTime / duration, 1); // Progreso entre 0 y 1
     startingNumber.value = Math.floor(progress * filteredProductsCount.value);
-
     if (progress < 1) {
       requestAnimationFrame(update);
     }
   };
-
   requestAnimationFrame(update);
 };
 
@@ -207,7 +208,7 @@ const dt = ref();
 const exportCSV = () => {
     dt.value.exportCSV();
 };
-
+/*
 const getSortIcon = (sorted, sortOrder) => {
   if (sorted == null) {
     return 'pi pi-sort-alt';
@@ -222,7 +223,24 @@ const getSortIcon = (sorted, sortOrder) => {
     }
   }
 };
-
+*/
+const sortIcons = computed(() => {
+  return (sorted, sortOrder) => {
+    if (sorted == null) {
+    return 'pi pi-sort-alt';
+  } else {
+    if (sortOrder == -1) {
+      return 'pi pi-sort-amount-up';
+    } else if (sortOrder == 0) {
+      return 'pi pi-sort-alt';
+    } 
+    else {
+      return 'pi pi-sort-amount-down';
+    }
+  }
+  }
+})
+/*
 const getExpandIcon = (id) => {
   const checkProp = id in expandedRows.value;
   if (checkProp) {
@@ -231,6 +249,10 @@ const getExpandIcon = (id) => {
       return 'pi pi-plus';
   }
 };
+*/
+const expandIcons = computed(() => {
+  return (id) => expandedRows.value[id] ? 'pi pi-minus' : 'pi pi-plus';
+});
 
 const onExpandRow = (id) => {
   const checkProp = id in expandedRows.value;
@@ -241,18 +263,6 @@ const onExpandRow = (id) => {
   }
   expandedRows.value = { ...expandedRows.value }; // Esto asegura la reactividad
 };
-
-
-
-/*
-const totalBalanceAmount = computed(() =>{
-  if (Loader.value != true) {
-    return filteredProducts.value != undefined ? getPrimaAsegurada(filteredProducts.value) : 0;
-  } else {
-    return parseFloat(0).toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
-  }
-});
-*/
 /// Starting functions
 onMounted(async () => {
   if (produ) {
@@ -267,6 +277,7 @@ onMounted(async () => {
     animateNumber()
     animateCurrency()
   }, 1000);
+  initialized.value = true;
 });
 </script>
 
@@ -275,13 +286,13 @@ onMounted(async () => {
     <div class="mt-6 card border-2 border-blue-800" >
         <DataTable v-model:filters="filters"
         :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']" filterDisplay="menu"
-        :value="products" stripedRows paginator :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 60rem; width: 60rem" ref="dt" :expandedRows="expandedRows"
-        @filter="onFilter" scrollable scrollHeight="400px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-demo-session">
+        :value="products" stripedRows paginator :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]" size="small" tableStyle="min-width: 110rem; width: 110rem" ref="dt" :expandedRows="expandedRows"
+        @filter="onFilter" scrollable scrollHeight="590px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-demo-session">
         <template #header>
           <div class="flex justify-between">
             <div class="flex gap-2">
-              <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }" @click="toggleColorScheme()" />
+              <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }" @click="toggleColorScheme()" v-tooltip.bottom="'Alternar modo nocturno'"/>
               <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.bottom="'Exportar tabla como CSV'" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
             </div>
             <div class="flex justify-end gap-4">
@@ -298,25 +309,25 @@ onMounted(async () => {
         </template>
         <template #empty> No hay registros que coincidan con la busqueda </template>
         <!-- <template #loading> Cargando Información </template> -->
-        <Column style="width: 5rem">
+        <Column style="width: 4rem">
           <template #body="slotProps">
             <template v-if="Loader">
               <Skeleton></Skeleton>
             </template>
             <template v-else>
               <div class="flex flex-center items-center justify-center w-full">
-                  <Button :icon="getExpandIcon(slotProps.data.id_cotizacion)" :pt="{ root: { class: 'my-custom-button-main-no-background-no-border' } }" text rounded aria-label="Expand" @click.stop="onExpandRow(slotProps.data.id_cotizacion)"/>
+                  <Button :icon="expandIcons(slotProps.data.id_cotizacion)" :pt="{ root: { class: 'my-custom-button-main-no-background-no-border' } }" text rounded aria-label="Expand" @click.stop="onExpandRow(slotProps.data.id_cotizacion)"/>
                 </div>
             </template>
           </template>
         </Column>
         <Column v-for="col of mainColumns" :sortable="col.field != 'acciones' ? true : false"
-          :key="col.id_cotizacion" :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)" >
+          :key="col.id_cotizacion" :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)" style="max-width: 15rem;">
           <template #filtericon>
                 <i class="pi pi-filter" v-tooltip.bottom="'Opciones de filtrado'"/>
           </template>
           <template #sorticon="{ sorted, sortOrder }">
-                <i :class="getSortIcon(sorted, sortOrder)" v-tooltip.bottom="'Ordenar resultados'"/>
+                <i :class="sortIcons(sorted, sortOrder)" v-tooltip.bottom="'Ordenar resultados'"/>
           </template>
           
           <template #body="{ data }">
@@ -331,19 +342,21 @@ onMounted(async () => {
               </ButtonGroup>
             </template>
             <template v-else-if="col.field == 'balance'">
-              
-              {{ formatCurrency(data.balance) }}
-            
+              <div class="flex justify-center align-center w-full h-4/5">
+                <p class="w-11/12 h-1/5 text-md font-semibold text-left">
+                {{ formatCurrency(data.balance) }}
+              </p>
+              </div>
             </template>
             <template v-else-if="col.field == 'estado'">
               <div class="flex justify-center align-center w-full h-4/5">
-                <Tag :value="data[col.field]" class="w-full h-1/5 text-nowrap" v-bind="getSeverityMain(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeverityMain(data[col.field])}"></Tag>
+                <Tag :value="data[col.field]" class="w-11/12 h-1/5 text-nowrap" v-bind="getSeverityMain(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeverityMain(data[col.field])}"></Tag>
               </div>
             </template>
             <template v-else>
               <div class="flex justify-center align-center w-full h-4/5">
-                <p class="w-full h-1/5 text-md text-center">
-                  {{ col.field == "fecha_creacion" || col.field == 'fecha_cierre' ? formatDateForDisplay(data[col.field]) :
+                <p class="w-11/12 h-1/5 text-md font-semibold text-left">
+                  {{ col.field.includes('fecha') ? formatDateForDisplay(data[col.field]) :
                   data[col.field] }}
                 </p>
               </div>
@@ -393,7 +406,7 @@ onMounted(async () => {
           </div>
         </template>
       </DataTable>
-      <Dialog v-model:visible="visible" maximizable modal :style="{ width: '50rem' }" dismissableMask pt:root:class="!border-0 ">
+      <Dialog v-model:visible="visible" maximizable modal class="w-2/5 h-4/5" dismissableMask pt:root:class="!border-0 ">
         <template #container="{ closeCallback, maximizeCallback}">
           <div class="flex flex-col px-4 py-4 gap-6 rounded-lg info-table-container">
               <InfoTable v-if="visible" :id_record="logs" :produ="produ" @closeCallbackDialog="closeCallback" @maximizeCallbackDialog="maximizeCallback"/>

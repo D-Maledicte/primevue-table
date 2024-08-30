@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, toRaw, computed } from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import {fetchData, formatDateString, formatDateForDisplay, filters_distinction, getSeveritySecondary } from "./services/formatFunctions.mjs";
+import {fetchData, formatDateString, formatDateForDisplay, filters_distinction, getSeveritySecondary, areObjectsEqual } from "./services/formatFunctions.mjs";
 const props = defineProps({
   id_record: {
     type: String, // o el tipo de dato correcto
@@ -18,7 +18,7 @@ const emitShowLogsTable = (data) => {
 };
 
 const Loader = ref(true);
-
+const initialized = ref(false);
 const secondaryFormatData = (data) => {
   var newData = data.map(item => {
     return {
@@ -41,6 +41,13 @@ const filterByCotizacion = (id_cotizacion, data) => {
 };
 const filters = ref();
 const secondaryfilteredProducts = ref();
+watch(secondaryfilteredProducts, (newValue, oldValue) => {
+      if (initialized.value) {
+      if (areObjectsEqual(newValue, oldValue) == false) {
+        animateNumber();
+      }
+    }
+});
 const initSecondaryFilters = () => {
   filters.value = {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -158,6 +165,23 @@ const filteredProductsCount = computed(() => {
   }
 });
 
+const sortIcons = computed(() => {
+  return (sorted, sortOrder) => {
+    if (sorted == null) {
+    return 'pi pi-sort-alt';
+  } else {
+    if (sortOrder == -1) {
+      return 'pi pi-sort-amount-up';
+    } else if (sortOrder == 0) {
+      return 'pi pi-sort-alt';
+    } 
+    else {
+      return 'pi pi-sort-amount-down';
+    }
+  }
+  }
+})
+
 const dt = ref();
 const exportCSV = () => {
     dt.value.exportCSV();
@@ -178,6 +202,7 @@ onMounted(async () => {
     
       animateNumber(); // Ajusta el tiempo según sea necesario
   }, 1000);
+  initialized.value = true;
 });
 </script>
 
@@ -187,7 +212,7 @@ onMounted(async () => {
               <template #header>
               <div class="flex justify-between">
                 <div class="flex gap-2">
-                  <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="clearSecondaryFilter()" />
+                  <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="clearSecondaryFilter()" v-tooltip.bottom="'Limpiar filtro'"/>
                 <IconField>
                   <InputIcon>
                     <i class="pi pi-search" />
@@ -196,7 +221,7 @@ onMounted(async () => {
                 </IconField>
                 </div>
                 <div class="flex justify-end gap-4">
-                  <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-secondary' } }" @click="exportCSV($event)" />
+                  <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-secondary' } }" @click="exportCSV($event)" v-tooltip.bottom="'Exportar tabla como CSV'"/>
                 </div>
               </div>
               </template>
@@ -205,6 +230,12 @@ onMounted(async () => {
               <Column v-for="col of secondaryColumns"
                 :sortable="col.field != 'aviso' && col.field != 'acciones' ? true : false" :key="col.id_pedido"
                 :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)">
+                <template #filtericon>
+                <i class="pi pi-filter" v-tooltip.bottom="'Opciones de filtrado'"/>
+                </template>
+                <template #sorticon="{ sorted, sortOrder }">
+                      <i :class="sortIcons(sorted, sortOrder)" v-tooltip.bottom="'Ordenar resultados'"/>
+                </template>
                 <template #body="{ data }">
                   <template v-if="Loader">
                     <Skeleton></Skeleton>
@@ -228,16 +259,16 @@ onMounted(async () => {
                   </template>
                   <template v-else-if="col.field == 'estado'">
               <div class="flex justify-center align-center w-full h-4/5">
-                <Tag :value="data[col.field]" class="w-full h-1/5" v-bind="getSeveritySecondary(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeveritySecondary(data[col.field])}"></Tag>
+                <Tag :value="data[col.field]" class="w-8/12 h-1/5 text-nowrap" v-bind="getSeveritySecondary(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeveritySecondary(data[col.field])}"></Tag>
               </div>
             </template>
                   <template v-else>
                     <div class="flex justify-center align-center w-full h-4/5">
-                <p class="w-full h-1/5 text-md text-center">
-                  {{ col.field == "fecha_bloqueo" || col.field == 'fecha_cot_esp' ? formatDateForDisplay(data[col.field]) :
-                  data[col.field] }}
-                </p>
-              </div>
+                      <p class="w-full h-1/5 font-semibold text-center">
+                        {{ col.field == "fecha_bloqueo" || col.field == 'fecha_cot_esp' ? formatDateForDisplay(data[col.field]) :
+                        data[col.field] }}
+                      </p>
+                    </div>
                   </template>
                   </template>
                 </template>
