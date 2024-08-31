@@ -36,6 +36,9 @@ import Dialog from 'primevue/dialog';
 import Skeleton from 'primevue/skeleton';
 import Ripple from 'primevue/ripple';
 import Popover from 'primevue/popover';
+import ProgressSpinner from 'primevue/progressspinner';
+import ProgressBar from 'primevue/progressbar';
+import Chart from 'primevue/chart';
 //import ConfirmPopup from 'primevue/confirmpopup';
 //import ConfirmationService from 'primevue/confirmationservice';
 //import Fluid from 'primevue/';
@@ -324,9 +327,12 @@ app.component('Panel', Panel);
 app.component('Card', Card);
 app.component('Dialog', Dialog);
 app.component('Popover', Popover);
+app.component('ProgressSpinner', ProgressSpinner);
+app.component('ProgressBar', ProgressBar);
 /*app.component('ConfirmPopup', ConfirmPopup);*/
 //app.component('Fluid', Fluid);
 app.component('Skeleton', Skeleton);
+app.component('Chart', Chart);
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
 app.mount('#app')

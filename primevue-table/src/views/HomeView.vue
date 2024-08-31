@@ -1,21 +1,114 @@
 <script setup>
-import MainTable from '@/components/MainTable.vue'
+import KpisSchema from '@/components/KpisSchema.vue';
+import MainTable from '@/components/MainTable.vue';
 import ClientsTable from '@/components/ClientsTable.vue';
+import { ref, onMounted, watch, toRaw, computed} from 'vue';
+
+import { useMainTableDataStore } from '@/stores/mainTableData';
+import {fetchData, formatDateString} from "../components/services/formatFunctions.mjs"
 ///Main deploy segmentation
 const produ = false;
+const Loader = ref(true);
+const formatData = (data) => {
+  var newData = data.map(item => {
+    return {
+      ...item,
+      fecha_creacion: formatDateString(item.fecha_creacion),
+      fecha_cierre: formatDateString(item.fecha_cierre)
+    };
+  });
+  return newData
+};
+const MainTableRows = ref();
+const mainTableDataStore = useMainTableDataStore();
+const kpisPanel = ref();
+const kpisPanelFlag = ref(false);
+const kpisToggle = (event) => {
+  kpisPanel.value.toggle(event);
+  kpisPanelFlag.value = !kpisPanelFlag.value;
+  
+};
+const kpisPanelState = computed(() => {
+  return kpisPanelFlag.value? 'pi pi-plus' : 'pi pi-minus';
+})
+const MainTablePanel = ref();
+const MainTablePanelFlag = ref(false);
+const mainTablePanelToggle = (event) => {
+  MainTablePanel.value.toggle(event);
+  MainTablePanelFlag.value = !MainTablePanelFlag.value;
+  
+};
+const MainTablePanelState = computed(() => {
+  return MainTablePanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
+})
+const ClientsPanel = ref();
+const ClientsPanelFlag = ref(false);
+const clientsPanelToggle = (event) => {
+  ClientsPanel.value.toggle(event);
+  ClientsPanelFlag.value = !ClientsPanelFlag.value;
+  
+};
+const ClientsPanelState = computed(() => {
+  return ClientsPanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
+})
+
+onMounted(async () => {
+  if (produ) {
+    MainTableRows.value = await fetchData("http://localhost:3000/api/mainTable/");
+  } else {
+    const { mainTable } = await import('@/assets/dataset.mjs');
+    MainTableRows.value = mainTable;
+  }
+  mainTableDataStore.setMainTableDataArray(formatData(MainTableRows.value));
+  mainTableDataStore.setInitialized(true);
+  Loader.value = false;
+});
 </script>
 
 <template>
   <main class="main_selector">
-    <div class="flex mt-6 card border-2 border-blue-800 w-full justify-center" >
-      <div class="flex flex-col gap-20 p-8 w-full justify-center">
-        <Panel header="Modelo: Tabla de cotizaciones" toggleable collapsed class="w-full">
-          <MainTable :produ="produ"></MainTable>
-        </Panel>
-        <Panel header="Modelo: Tabla de clientes" toggleable collapsed class="w-full">
-          <ClientsTable :produ="produ"></ClientsTable>
-        </Panel>
-      </div>
+    <div class="flex mt-6 card w-full justify-center" >
+        <div class="flex flex-col gap-20 p-8 w-full min-h-[30rem] justify-center">
+          <template v-if="Loader">
+            <div class="flex w-full justify-center">
+              <ProgressBar mode="indeterminate" style="height: 15px" class="w-6/12"></ProgressBar>
+            </div>
+          </template>
+          <template v-else>
+            <Panel class="w-full" ref="kpisPanel">
+              <template #header>
+                  <div class="flex justify-center align-center items-center gap-2">
+                    <Button :icon="kpisPanelState" rounded text @click="kpisToggle(event)" />
+                    <span class="font-bold">Modelo: KPI´s (en construcción)</span>
+                  </div>
+              </template>
+              <KpisSchema />
+            </Panel>
+            <Panel collapsed class="w-full" ref="MainTablePanel">
+              <template #header>
+                  <div class="flex justify-center align-center items-center gap-2">
+                    <Button :icon="MainTablePanelState" rounded text @click="mainTablePanelToggle(event)" />
+                    <span class="font-bold">Modelo: Tabla anidada</span>
+                  </div>
+              </template>
+              <template v-if="MainTablePanelFlag && mainTableDataStore.initialized">
+                <MainTable :produ="produ"></MainTable>
+              </template>
+            </Panel>
+            <Panel collapsed class="w-full" ref="ClientsPanel">
+              <template #header>
+                  <div class="flex justify-center align-center items-center gap-2">
+                    <Button :icon="ClientsPanelState" rounded text @click="clientsPanelToggle(event)" />
+                    <span class="font-bold">Modelo: Tabla de clientes</span>
+                  </div>
+              </template>
+              <template v-if="ClientsPanelFlag">
+                <ClientsTable :produ="produ"></ClientsTable>
+              </template>
+            </Panel>
+          </template>
+        </div>
+      
     </div>
   </main>
 

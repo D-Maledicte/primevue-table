@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, toRaw, computed} from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import {fetchData, formatDateString, formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getPrimaAseguradaNonCurrency, areObjectsEqual } from "../components/services/formatFunctions.mjs"
+import { formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getPrimaAseguradaNonCurrency, areObjectsEqual } from "../components/services/formatFunctions.mjs"
 import { useMainTableDataStore } from '@/stores/mainTableData';
 import ExpansionTable from '@/components/ExpansionTable.vue';
 import InfoTable from '@/components/InfoTable.vue';
@@ -21,17 +21,11 @@ const toggleColorScheme = () => {
     screenMode.value = screenMode.value == "pi pi-sun"? "pi pi-moon" : "pi pi-sun";
 };
 const Loader = ref(true);
+const screenWidth = ref(window.innerWidth);
 
-const formatData = (data) => {
-  var newData = data.map(item => {
-    return {
-      ...item,
-      fecha_creacion: formatDateString(item.fecha_creacion),
-      fecha_cierre: formatDateString(item.fecha_cierre)
-    };
-  });
-  representatives.value = updateRepresentatives(newData);
-  return newData
+const dialogState = ref();
+const dialogMaximize = (event) => {
+  dialogState.value.maximize(event);
 };
 /// Filter Spectrum
 //Seteeamos la dinamica de los distintos filtros
@@ -93,11 +87,14 @@ const procesarOperacion = (target) => {
 const showLogsTable = (data) => {
   logs.value = data.id_pedido;
   visible.value = true;
+  if (screenWidth.value < 768) {
+    dialogMaximize();
+  }
 };
 
 /// Data Gathering
 const initialized = ref(false);
-const MainTableRows = ref();
+
 const products = ref(new Array(5));
 const filteredProducts = ref();
 watch(filteredProducts, (newValue, oldValue) => {
@@ -245,15 +242,9 @@ const onExpandRow = (id) => {
 };
 /// Starting functions
 onMounted(async () => {
-  if (props.produ) {
-    MainTableRows.value = await fetchData("http://localhost:3000/api/mainTable/");
-  } else {
-    const { mainTable } = await import('@/assets/dataset.mjs');
-    MainTableRows.value = mainTable;
-  }
   setTimeout(() => {
-    mainTableDataStore.setMainTableDataArray(formatData(MainTableRows.value));
     products.value = mainTableDataStore.mainTableDataArray;
+    representatives.value = updateRepresentatives(mainTableDataStore.mainTableDataArray);
     //products.value = formatData(MainTableRows.value)
     Loader.value = false;
     animateNumber()
@@ -386,7 +377,7 @@ onMounted(async () => {
           </div>
         </template>
       </DataTable>
-      <Dialog v-model:visible="visible" maximizable modal class="w-2/5 h-4/5" dismissableMask pt:root:class="!border-0 ">
+      <Dialog v-model:visible="visible" ref="dialogState" maximizable modal class="w-2/5 h-4/5" dismissableMask pt:root:class="!border-0 ">
         <template #container="{ closeCallback, maximizeCallback}">
           <div class="flex flex-col px-4 py-4 gap-6 rounded-lg info-table-container">
               <InfoTable v-if="visible" :id_record="logs" :produ="props.produ" @closeCallbackDialog="closeCallback" @maximizeCallbackDialog="maximizeCallback"/>

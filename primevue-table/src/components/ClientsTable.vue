@@ -149,7 +149,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="p-16 w-full">
+  <div class="md:p-16 w-full">
     <DataTable v-model:filters="filters" :globalFilterFields="['nombre', 'apellido', 'dni', 'telefono', 'email' ]" filterDisplay="menu" :value="products" @filter="onFilter" tableStyle="min-width: 50rem" ref="dt" stripedRows paginator :rows="5"
             :rowsPerPageOptions="[5, 10, 20, 50]">
               <template #header>
@@ -217,11 +217,6 @@ onMounted(async () => {
   <Dialog v-model:visible="visible" maximizable modal dismissableMask pt:root:class="!border-0 ">
         <template #container="{ closeCallback}">
             <Card style="width: 28rem; overflow: hidden">
-                <template #header>
-                    <div class="flex justify-end h-1 align-center">
-                      <Button icon="pi pi-times" text rounded aria-label="Close" @click="closeCallback()" v-tooltip.bottom="'Cerrar vista detallada'"/>
-                    </div>
-                </template>
                 <template #title>
                   <p>{{ detailedInfo.nombre }} {{ detailedInfo.apellido }}</p>
                 </template>
@@ -233,9 +228,14 @@ onMounted(async () => {
                   </div>
                 </template>
                 <template #content>
+                  <div class="flex justify-around">
                     <p class="m-0">
-                        Provincia: {{ detailedInfo.provincia }}
+                        Provincia: 
                     </p>
+                    <p>
+                      {{ detailedInfo.provincia }}
+                    </p>
+                  </div>
                     <p class="m-0">
                         Localidad: {{ detailedInfo.localidad }}
                     </p>
@@ -251,6 +251,12 @@ onMounted(async () => {
                     <p class="m-0">
                         Fecha de nacimiento: {{ formatDateForDisplay(detailedInfo.fechaDeNacimiento) }}
                     </p>
+                </template>
+                <template #footer>
+                    <div class="flex gap-4 mt-1">
+                        <Button label="Editar" severity="secondary" outlined class="w-full" />
+                        <Button label="Cerrar" class="w-full" @click="closeCallback()" v-tooltip.bottom="'Cerrar vista detallada'"/>
+                    </div>
                 </template>
             </Card>
         </template>
