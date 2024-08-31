@@ -140,7 +140,10 @@ const filteredCreadosVsGanados = computed(() => {
   // Inicialización de arrays para contar registros por mes (12 meses)
   const ganadoCounts = Array(12).fill(0);
   const otrosCounts = Array(12).fill(0);
-
+  const labels = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
   // Iterar sobre los registros
   mainTableDataArray.value.forEach(item => {
       const fechaCreacion = new Date(item.fecha_creacion);
@@ -160,7 +163,7 @@ const filteredCreadosVsGanados = computed(() => {
 
   // Construcción del objeto del gráfico
   const chartData = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      labels: labels,
       datasets: [
           {
               label: 'Cerrado ganado',
