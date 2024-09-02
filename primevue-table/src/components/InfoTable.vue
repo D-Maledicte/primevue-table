@@ -89,13 +89,15 @@ const applyFilterPopover = () => {
   }, 100);
 };
 
-const applyFilterMultiSelect = (event) => {
-  console.log(event);
+const applyFilterMultiSelect = () => {
   
   setTimeout(() => {
     multiselect.value.hide(); // Oculta el popover después de un pequeño retraso
   }, 100);
 };
+const deleteFilterMultiSelect = () => {
+  infoTableTypeSelector.value = [];
+}
 
 const deleteFilterPopover = () => {
   filtered.value = false;
@@ -204,7 +206,8 @@ onMounted(async () => {
                                 </template>
                                 <template #footer>
                                   <div class="flex items-end justify-end gap-6">
-                                    <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterMultiSelect(event)" v-tooltip.bottom="'Aplicar filtros'"></Button>
+                                    <Button icon="pi pi-trash" text rounded aria-label="Confirm" @click="deleteFilterMultiSelect()" v-tooltip.bottom="'Borrar selección'"></Button>
+                                    <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterMultiSelect()" v-tooltip.bottom="'Confirmar selección'"></Button>
                                   </div>
                                 </template>
                             </MultiSelect>

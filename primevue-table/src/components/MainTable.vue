@@ -374,7 +374,7 @@ onMounted(async () => {
               <template #footer>
                                   <div class="flex items-end justify-between gap-6">
                                     <Button icon="pi pi-trash" text rounded aria-label="Confirm" @click="filterModel.value = null" v-tooltip.bottom="'Borrar selección'"></Button>
-                                    <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterMultiSelect(col.field)" v-tooltip.bottom="'Aplicar selección'"></Button>
+                                    <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterMultiSelect(col.field)" v-tooltip.bottom="'Confirmar selección'"></Button>
                                   </div>
               </template>
             </MultiSelect>
