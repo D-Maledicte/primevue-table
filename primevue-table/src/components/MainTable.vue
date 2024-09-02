@@ -48,6 +48,8 @@ const initFilters = () => {
 const clearFilter = () => {
   initFilters();
   localFilterValue.value = null
+  dt.value.d_sortField = null
+  dt.value.d_sortOrder = null
 };
 
 initFilters();
@@ -268,7 +270,7 @@ onMounted(async () => {
         :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']" filterDisplay="menu"
         :value="products" stripedRows paginator :rows="10"
         :rowsPerPageOptions="[5, 10, 20, 50]" size="small" tableStyle="min-width: 110rem; width: 110rem" ref="dt" :expandedRows="expandedRows"
-        @filter="onFilter" scrollable scrollHeight="590px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-demo-session">
+        @filter="onFilter" scrollable scrollHeight="590px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-mainTable-session">
         <template #header>
           <div class="flex justify-between">
             <div class="flex gap-2">
@@ -287,7 +289,52 @@ onMounted(async () => {
           </div>
           
         </template>
-        <template #empty> No hay registros que coincidan con la busqueda </template>
+        <template #empty>
+          <div class="flex flex-col justify-center content-center items-center w-full">
+            
+          <svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  width="200"
+  height="200"
+  fill="#8FA3AD"
+>
+  <!-- Fondo -->
+  <rect
+    x="8"
+    y="12"
+    width="48"
+    height="40"
+    rx="4"
+    ry="4"
+    fill="#DAE3E7"
+    stroke="#8FA3AD"
+    stroke-width="2"
+  />
+  <!-- Cara triste -->
+  <circle cx="24" cy="30" r="2" fill="#8FA3AD" />
+  <circle cx="40" cy="30" r="2" fill="#8FA3AD" />
+  <path
+    d="M28,38 C28,36 36,36 36,38"
+    stroke="#8FA3AD"
+    stroke-width="2"
+    fill="none"
+  />
+  <!-- Lupa -->
+  <circle cx="44" cy="44" r="10" stroke="#8FA3AD" stroke-width="2" fill="none" />
+  <line x1="50" y1="50" x2="60" y2="60" stroke="#8FA3AD" stroke-width="2" />
+  <!-- Papel doblado -->
+  <path
+    d="M40 12 H48 V20"
+    fill="#FFF"
+    stroke="#8FA3AD"
+    stroke-width="2"
+  />
+          </svg>
+          <p class="font-light">No hay registros que coincidan con la búsqueda</p>
+          </div>
+          
+        </template>
         <!-- <template #loading> Cargando Información </template> -->
         <Column style="width: 4rem">
           <template #body="slotProps">

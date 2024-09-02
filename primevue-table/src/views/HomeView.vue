@@ -2,7 +2,7 @@
 import KpisSchema from '@/components/KpisSchema.vue';
 import MainTable from '@/components/MainTable.vue';
 import ClientsTable from '@/components/ClientsTable.vue';
-import { ref, onMounted, watch, toRaw, computed} from 'vue';
+import { ref, onMounted, computed} from 'vue';
 
 import { useMainTableDataStore } from '@/stores/mainTableData';
 import {fetchData, formatDateString} from "../components/services/formatFunctions.mjs"

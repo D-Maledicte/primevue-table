@@ -63,6 +63,8 @@ const initClientsFilters = () => {
 const clearClientsFilter = () => {
   initClientsFilters();
   localFilterValue.value = null
+  dt.value.d_sortField = null
+  dt.value.d_sortOrder = null
 };
 initClientsFilters();
 const debounce = (func, wait) => {
@@ -150,8 +152,8 @@ onMounted(async () => {
 </script>
 <template>
   <div class="md:p-16 w-full">
-    <DataTable v-model:filters="filters" :globalFilterFields="['nombre', 'apellido', 'dni', 'telefono', 'email' ]" filterDisplay="menu" :value="products" @filter="onFilter" tableStyle="min-width: 50rem" ref="dt" stripedRows paginator :rows="5"
-            :rowsPerPageOptions="[5, 10, 20, 50]">
+    <DataTable v-model:filters="filters" :globalFilterFields="['nombre', 'apellido', 'dni', 'telefono', 'email' ]" filterDisplay="menu" :value="products" @filter="onFilter" tableStyle="min-width: 105rem; width: 105rem" ref="dt" stripedRows paginator :rows="5"
+            :rowsPerPageOptions="[5, 10, 20, 50]" scrollable scrollHeight="590px" stateStorage="session" stateKey="dt-state-client-session">
               <template #header>
               <div class="flex justify-between">
                 <div class="flex justify-start gap-4">
@@ -168,7 +170,52 @@ onMounted(async () => {
                 </div>
               </div>
               </template>
-              <template #empty> No hay registros que coincidan con la busqueda </template>
+              <template #empty>
+          <div class="flex flex-col justify-center content-center items-center w-full">
+            
+          <svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  width="200"
+  height="200"
+  fill="#8FA3AD"
+>
+  <!-- Fondo -->
+  <rect
+    x="8"
+    y="12"
+    width="48"
+    height="40"
+    rx="4"
+    ry="4"
+    fill="#DAE3E7"
+    stroke="#8FA3AD"
+    stroke-width="2"
+  />
+  <!-- Cara triste -->
+  <circle cx="24" cy="30" r="2" fill="#8FA3AD" />
+  <circle cx="40" cy="30" r="2" fill="#8FA3AD" />
+  <path
+    d="M28,38 C28,36 36,36 36,38"
+    stroke="#8FA3AD"
+    stroke-width="2"
+    fill="none"
+  />
+  <!-- Lupa -->
+  <circle cx="44" cy="44" r="10" stroke="#8FA3AD" stroke-width="2" fill="none" />
+  <line x1="50" y1="50" x2="60" y2="60" stroke="#8FA3AD" stroke-width="2" />
+  <!-- Papel doblado -->
+  <path
+    d="M40 12 H48 V20"
+    fill="#FFF"
+    stroke="#8FA3AD"
+    stroke-width="2"
+  />
+          </svg>
+          <p class="font-light">No hay registros que coincidan con la búsqueda</p>
+          </div>
+          
+        </template>
               <Column v-for="col of ClientsColumns"
               :sortable="col.field != 'acciones' ? true : false" :key="col.id_cliente"
                 :field="col.field" :header="col.header" v-bind="filters_distinction_clients(col.field)">
@@ -218,44 +265,79 @@ onMounted(async () => {
         <template #container="{ closeCallback}">
             <Card style="width: 28rem; overflow: hidden">
                 <template #title>
-                  <p>{{ detailedInfo.nombre }} {{ detailedInfo.apellido }}</p>
+                  <div class="flex flex-col w-full">
+                    <p>{{ detailedInfo.nombre }} {{ detailedInfo.apellido }}</p>
+                  </div>
+                  
                 </template>
                 <template #subtitle>
-                  <div>
-                    <p>Dni: {{ detailedInfo.dni }}</p>
+                  <div class="flex flex-col content-center items-center w-full">
+                    <div class="text-gray-400 w-11/12 text-xs px-2 py-1">
+                    <p>DNI/CUIT: {{ detailedInfo.dni }}</p>
                     <p>Telefono: {{ detailedInfo.telefono }}</p>
                     <p>Correo Electrónico: {{ detailedInfo.email }}</p>
                   </div>
+                  </div>
+                  
                 </template>
                 <template #content>
-                  <div class="flex justify-around">
-                    <p class="m-0">
+                  <div class="flex flex-col content-center items-center w-full">
+                    <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+                    <p class="text-gray-500 font-normal text-left">
                         Provincia: 
                     </p>
-                    <p>
+                    <p class="font-medium text-right">
                       {{ detailedInfo.provincia }}
                     </p>
                   </div>
-                    <p class="m-0">
-                        Localidad: {{ detailedInfo.localidad }}
+                  <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+                    <p class="text-gray-500 text-left">
+                        Localidad:
                     </p>
-                    <p class="m-0">
-                        Calle: {{ detailedInfo.calle }}
+                    <p class="font-medium text-right">
+                      {{ detailedInfo.localidad }}
                     </p>
-                    <p class="m-0">
-                        Numero de calle: {{ detailedInfo.nroCalle }}
+                  </div>
+                  <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+                    <p class="text-gray-500 text-left">
+                        Calle:
                     </p>
-                    <p class="m-0">
-                        Grupo Económico: {{ detailedInfo.grupoEconomico }}
+                    <p class="font-medium text-right">
+                      {{ detailedInfo.calle }}
                     </p>
-                    <p class="m-0">
-                        Fecha de nacimiento: {{ formatDateForDisplay(detailedInfo.fechaDeNacimiento) }}
+                  </div>
+                  <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+                    <p class="text-gray-500 text-left">
+                        Numero de calle:
                     </p>
+                    <p class="font-medium text-right">
+                      {{ detailedInfo.nroCalle }}
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+                      <p class="text-gray-500 text-left text-nowrap">
+                        Grupo Económico:
+                    </p>
+                    <p class="font-medium text-right">
+                      {{ detailedInfo.grupoEconomico }}
+                    </p>
+                    </div>
+                    <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+                      <p class="text-gray-500 text-left text-nowrap">
+                        Fecha de nacimiento:
+                    </p>
+                    <p class="font-medium text-right">
+                      {{ formatDateForDisplay(detailedInfo.fechaDeNacimiento) }}
+                    </p>
+                    </div>
+                  </div>
+                  
+                    
                 </template>
                 <template #footer>
                     <div class="flex gap-4 mt-1">
-                        <Button label="Editar" severity="secondary" outlined class="w-full" />
-                        <Button label="Cerrar" class="w-full" @click="closeCallback()" v-tooltip.bottom="'Cerrar vista detallada'"/>
+                        <Button label="Editar" class="w-8/12" v-tooltip.bottom="'Editar información'"/>
+                        <Button label="Cerrar" severity="secondary" outlined class="w-8/12" @click="closeCallback()" v-tooltip.bottom="'Cerrar vista detallada'"/>
                     </div>
                 </template>
             </Card>
