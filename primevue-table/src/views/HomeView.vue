@@ -29,7 +29,7 @@ const kpisToggle = (event) => {
   
 };
 const kpisPanelState = computed(() => {
-  return kpisPanelFlag.value? 'pi pi-plus' : 'pi pi-minus';
+  return kpisPanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
 })
 const MainTablePanel = ref();
 const MainTablePanelFlag = ref(false);
@@ -75,14 +75,17 @@ onMounted(async () => {
             </div>
           </template>
           <template v-else>
-            <Panel class="w-full" ref="kpisPanel">
+            <Panel collapsed class="w-full" ref="kpisPanel">
               <template #header>
                   <div class="flex justify-center align-center items-center gap-2">
                     <Button :icon="kpisPanelState" rounded text @click="kpisToggle(event)" />
                     <span class="font-bold">Modelo: KPI´s (en construcción)</span>
                   </div>
               </template>
-              <KpisSchema />
+              <template v-if="kpisPanelFlag">
+                <KpisSchema />
+              </template>
+              
             </Panel>
             <Panel collapsed class="w-full" ref="MainTablePanel">
               <template #header>
