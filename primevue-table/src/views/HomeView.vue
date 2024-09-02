@@ -31,6 +31,9 @@ const kpisToggle = (event) => {
 const kpisPanelState = computed(() => {
   return kpisPanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
 })
+const kpisPanelTooltip = computed(() => {
+  return MainTablePanelFlag.value? 'Contraer' : 'Desplegar';
+})
 const MainTablePanel = ref();
 const MainTablePanelFlag = ref(false);
 const mainTablePanelToggle = (event) => {
@@ -41,6 +44,9 @@ const mainTablePanelToggle = (event) => {
 const MainTablePanelState = computed(() => {
   return MainTablePanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
 })
+const MainTablePanelTooltip = computed(() => {
+  return MainTablePanelFlag.value? 'Contraer' : 'Desplegar';
+})
 const ClientsPanel = ref();
 const ClientsPanelFlag = ref(false);
 const clientsPanelToggle = (event) => {
@@ -50,6 +56,9 @@ const clientsPanelToggle = (event) => {
 };
 const ClientsPanelState = computed(() => {
   return ClientsPanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
+})
+const ClientsPanelTooltip = computed(() => {
+  return MainTablePanelFlag.value? 'Contraer' : 'Desplegar';
 })
 
 onMounted(async () => {
@@ -78,7 +87,7 @@ onMounted(async () => {
             <Panel collapsed class="w-full" ref="kpisPanel">
               <template #header>
                   <div class="flex justify-center align-center items-center gap-2">
-                    <Button :icon="kpisPanelState" rounded text @click="kpisToggle(event)" />
+                    <Button :icon="kpisPanelState" rounded text @click="kpisToggle(event)" v-tooltip.right="kpisPanelTooltip"/>
                     <span class="font-bold">Modelo: KPI´s (en construcción)</span>
                   </div>
               </template>
@@ -90,7 +99,7 @@ onMounted(async () => {
             <Panel collapsed class="w-full" ref="MainTablePanel">
               <template #header>
                   <div class="flex justify-center align-center items-center gap-2">
-                    <Button :icon="MainTablePanelState" rounded text @click="mainTablePanelToggle(event)" />
+                    <Button :icon="MainTablePanelState" rounded text @click="mainTablePanelToggle(event)" v-tooltip.right="MainTablePanelTooltip"/>
                     <span class="font-bold">Modelo: Tabla anidada</span>
                   </div>
               </template>
@@ -101,7 +110,7 @@ onMounted(async () => {
             <Panel collapsed class="w-full" ref="ClientsPanel">
               <template #header>
                   <div class="flex justify-center align-center items-center gap-2">
-                    <Button :icon="ClientsPanelState" rounded text @click="clientsPanelToggle(event)" />
+                    <Button :icon="ClientsPanelState" rounded text @click="clientsPanelToggle(event)" v-tooltip.right="ClientsPanelTooltip"/>
                     <span class="font-bold">Modelo: Tabla de clientes</span>
                   </div>
               </template>

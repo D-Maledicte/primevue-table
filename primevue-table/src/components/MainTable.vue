@@ -12,7 +12,7 @@ const props = defineProps({
   }
 });
 const mainTableDataStore = useMainTableDataStore();
-
+const MultiSelectReferences = ref({});
 /// Visual effects
 const screenMode = ref("pi pi-moon");
 const toggleColorScheme = () => {
@@ -22,7 +22,6 @@ const toggleColorScheme = () => {
 };
 const Loader = ref(true);
 const screenWidth = ref(window.innerWidth);
-
 const dialogState = ref();
 const dialogMaximize = (event) => {
   dialogState.value.maximize(event);
@@ -71,6 +70,12 @@ watch(localFilterValue, (newValue) => {
       updateFilter(newValue);
 });
 
+const applyFilterMultiSelect = (field) => {
+  setTimeout(() => {
+    // Asegurarse de que la referencia existe antes de llamar a .hide()
+    MultiSelectReferences.value[field].hide(); // Oculta el popover después de un pequeño retraso
+  }, 100);
+};
 /// Navigation process
 const procesarOperacion = (target) => {
   let titulo = target.titulo;
@@ -231,6 +236,10 @@ const expandIcons = computed(() => {
   return (id) => expandedRows.value[id] ? 'pi pi-minus' : 'pi pi-plus';
 });
 
+const expandTooltip = computed(() => {
+  return (id) => expandedRows.value[id] ? 'Contraer' : 'Desplegar';
+});
+
 const onExpandRow = (id) => {
   const checkProp = id in expandedRows.value;
   if (checkProp) {
@@ -263,8 +272,8 @@ onMounted(async () => {
         <template #header>
           <div class="flex justify-between">
             <div class="flex gap-2">
-              <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }" @click="toggleColorScheme()" v-tooltip.bottom="'Alternar modo nocturno'"/>
-              <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.bottom="'Exportar tabla como CSV'" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
+              <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }" @click="toggleColorScheme()" v-tooltip.right="'Alternar modo nocturno'"/>
+              <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.right="'Exportar tabla como CSV'" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
             </div>
             <div class="flex justify-end gap-4">
             <Button type="button" icon="pi pi-trash" label="Limpiar" v-tooltip.bottom="'Limpiar filtro'" :pt="{ root: { class: 'my-custom-button-main-no-background' } }" outlined @click="clearFilter()" />
@@ -287,7 +296,7 @@ onMounted(async () => {
             </template>
             <template v-else>
               <div class="flex flex-center items-center justify-center w-full">
-                  <Button :icon="expandIcons(slotProps.data.id_cotizacion)" :pt="{ root: { class: 'my-custom-button-main-no-background-no-border' } }" text rounded aria-label="Expand" @click.stop="onExpandRow(slotProps.data.id_cotizacion)"/>
+                  <Button :icon="expandIcons(slotProps.data.id_cotizacion)" :pt="{ root: { class: 'my-custom-button-main-no-background-no-border' } }" text rounded aria-label="Expand" @click.stop="onExpandRow(slotProps.data.id_cotizacion)" v-tooltip.right="expandTooltip(slotProps.data.id_cotizacion)"/>
                 </div>
             </template>
           </template>
@@ -351,7 +360,7 @@ onMounted(async () => {
           <template
             v-else-if="col.field != 'acciones'" 
             #filter="{ filterModel }" >
-            <MultiSelect v-model="filterModel.value" :options="representatives[col.field]" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-60" placeholder="Todos">
+            <MultiSelect v-model="filterModel.value" :ref="(el) => MultiSelectReferences[col.field] = el" :options="representatives[col.field]" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-60" placeholder="Todos">
               <template #option="slotProps">
                 <template v-if="col.field == 'estado'">
                   <div class="flex items-center gap-2">
@@ -361,6 +370,12 @@ onMounted(async () => {
                 <template v-else>
                   <span>{{ slotProps.option }}</span>
                 </template>
+              </template>
+              <template #footer>
+                                  <div class="flex items-end justify-between gap-6">
+                                    <Button icon="pi pi-trash" text rounded aria-label="Confirm" @click="filterModel.value = null" v-tooltip.bottom="'Borrar selección'"></Button>
+                                    <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterMultiSelect(col.field)" v-tooltip.bottom="'Aplicar selección'"></Button>
+                                  </div>
               </template>
             </MultiSelect>
           </template>

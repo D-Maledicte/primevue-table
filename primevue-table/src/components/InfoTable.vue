@@ -21,6 +21,7 @@ const maximizeCallbackDialog = () => {
 };
 //const confirm = useConfirm();
 const popover = ref();
+const multiselect = ref();
 const Loader = ref(true);
 const filtered = ref(false);
 const InfoTableRows = ref();
@@ -88,9 +89,17 @@ const applyFilterPopover = () => {
   }, 100);
 };
 
+const applyFilterMultiSelect = (event) => {
+  console.log(event);
+  
+  setTimeout(() => {
+    multiselect.value.hide(); // Oculta el popover después de un pequeño retraso
+  }, 100);
+};
+
 const deleteFilterPopover = () => {
   filtered.value = false;
-  infoTableDateSelector.value = [];
+  infoTableDateSelector.value = null;
   infoTableTypeSelector.value = [];
   setTimeout(() => {
     popover.value.hide(); // Oculta el popover después de un pequeño retraso
@@ -187,17 +196,23 @@ onMounted(async () => {
                   <Popover ref="popover">
                         <div class="flex flex-col justify-between rounded p-0.5 gap-6 mt-6">
                           <FloatLabel>
-                            <MultiSelect id="type_selector" v-model="infoTableTypeSelector" :options="logsRepresentatives.tipo" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-56">
+                            <MultiSelect id="type_selector" ref="multiselect" v-model="infoTableTypeSelector" :options="logsRepresentatives.tipo" :selectedItemsLabel="'{0} opciones elegidas' " showToggleAll filterPlaceholder="Buscar" :maxSelectedLabels="2" class="w-56">
                                 <template #option="slotProps">
                                   <div class="flex items-center gap-2">
                                       <Tag :value="slotProps.option" v-bind="getSeverityLogs(slotProps.option) == null? { class: 'severity-null'} : { severity: getSeverityLogs(slotProps.option)}"></Tag>
+                                  </div>
+                                </template>
+                                <template #footer>
+                                  <div class="flex items-end justify-end gap-6">
+                                    <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterMultiSelect(event)" v-tooltip.bottom="'Aplicar filtros'"></Button>
                                   </div>
                                 </template>
                             </MultiSelect>
                             <label for="type_selector">Filtrar por tipo</label>
                           </FloatLabel>
                           <FloatLabel>
-                            <DatePicker v-model="infoTableDateSelector" selectionMode="range" :manualInput="false" inputId="date_selector" class="w-56"/>
+                            <DatePicker v-model="infoTableDateSelector"  selectionMode="range" showButtonBar :hideOnRangeSelection="true" :manualInput="false" inputId="date_selector" class="w-56" placeholder="Desde - Hasta">
+                            </DatePicker>
                             <label for="date_selector">Filtrar por fecha</label>
                           </FloatLabel>
                           <div class="flex items-end justify-end gap-6">
@@ -209,7 +224,7 @@ onMounted(async () => {
                 </div>
                 <div>
                   <Button icon="pi pi-times" text rounded aria-label="Close" @click="closeCallbackDialog()" v-tooltip.bottom="'Cerrar logs'"/>
-                  <Button icon="pi pi-window-maximize" text rounded aria-label="Close" @click="maximizeCallbackDialog()" v-tooltip.bottom="'Maximizar tablero'"/>
+                  <Button icon="pi pi-window-maximize" text rounded aria-label="Close" @click="maximizeCallbackDialog()" v-tooltip.bottom="'Maximizar'"/>
                 </div>
               </div>
             </template>
