@@ -152,7 +152,7 @@ onMounted(async () => {
 </script>
 <template>
   <div class="md:p-16 w-full">
-    <DataTable v-model:filters="filters" :globalFilterFields="['nombre', 'apellido', 'dni', 'telefono', 'email' ]" filterDisplay="menu" :value="products" @filter="onFilter" tableStyle="min-width: 105rem; width: 105rem" ref="dt" stripedRows paginator :rows="5"
+    <DataTable v-model:filters="filters" :globalFilterFields="['nombre', 'apellido', 'dni', 'telefono', 'email' ]" filterDisplay="menu" :value="products" @filter="onFilter" tableStyle="min-width: 105rem; width: 105rem" ref="dt" stripedRows paginator :rows="10"
             :rowsPerPageOptions="[5, 10, 20, 50]" scrollable scrollHeight="590px" stateStorage="session" stateKey="dt-state-client-session">
               <template #header>
               <div class="flex justify-between">

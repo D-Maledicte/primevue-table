@@ -94,7 +94,7 @@ const procesarOperacion = (target) => {
 const showLogsTable = (data) => {
   logs.value = data.id_pedido;
   visible.value = true;
-  if (screenWidth.value < 768) {
+  if (screenWidth.value <= 1080) {
     dialogMaximize();
   }
 };
