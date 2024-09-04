@@ -18,13 +18,19 @@ const closeCallbackDialog = () => {
 };
 const maximizeCallbackDialog = () => {
   emit('maximizeCallbackDialog'); // Emitimos el evento con los datos que queremos pasar al padre
+  maximizeStatus.value = maximizeStatus.value == "Maximizar"? "Minimizar" : "Maximizar";
 };
+const screenWidth = ref(window.innerWidth);
+const maximizeIconShow = computed(() => {
+  screenWidth < 1080? false : true;
+})
 //const confirm = useConfirm();
 const popover = ref();
 const multiselect = ref();
 const Loader = ref(true);
 const filtered = ref(false);
 const InfoTableRows = ref();
+const maximizeStatus = ref("Maximizar");
 const products = ref(new Array(1));
 const filteredLogsProducts = ref();
 const infoTableDateSelector = ref();
@@ -226,8 +232,10 @@ onMounted(async () => {
                   </Popover>
                 </div>
                 <div>
-                  <Button icon="pi pi-times" text rounded aria-label="Close" @click="closeCallbackDialog()" v-tooltip.bottom="'Cerrar logs'"/>
-                  <Button icon="pi pi-window-maximize" text rounded aria-label="Close" @click="maximizeCallbackDialog()" v-tooltip.bottom="'Maximizar'"/>
+                  <Button icon="pi pi-times" text rounded aria-label="Close" @click="closeCallbackDialog()" v-tooltip.bottom="'Cerrar Logs'"/>
+                  <template v-if="maximizeIconShow == true">
+                    <Button icon="pi pi-window-maximize" text rounded aria-label="Close" @click="maximizeCallbackDialog()" v-tooltip.bottom="maximizeStatus"/>
+                  </template>
                 </div>
               </div>
             </template>

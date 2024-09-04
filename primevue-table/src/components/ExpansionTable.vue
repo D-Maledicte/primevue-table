@@ -213,13 +213,14 @@ onMounted(async () => {
               <template #header>
               <div class="flex justify-between">
                 <div class="flex gap-2">
-                  <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="clearSecondaryFilter()" v-tooltip.bottom="'Limpiar filtro'"/>
-                <IconField>
+                  <IconField>
                   <InputIcon>
                     <i class="pi pi-search" />
                   </InputIcon>
                   <InputText v-model="filters['global'].value" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" placeholder="Busqueda general" />
                 </IconField>
+                  <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="clearSecondaryFilter()" v-tooltip.bottom="'Limpiar filtro'"/>
+                
                 </div>
                 <div class="flex justify-end gap-4">
                   <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-secondary' } }" @click="exportCSV($event)" v-tooltip.bottom="'Exportar tabla como CSV'"/>

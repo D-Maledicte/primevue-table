@@ -295,8 +295,8 @@ onMounted(async () => {
           <svg
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 64 64"
-  width="200"
-  height="200"
+  width="140"
+  height="140"
   fill="#8FA3AD"
 >
   <!-- Fondo -->
@@ -331,7 +331,7 @@ onMounted(async () => {
     stroke-width="2"
   />
           </svg>
-          <p class="font-light">No hay registros que coincidan con la búsqueda</p>
+          <p class="font-normal">No hay registros que coincidan con la búsqueda</p>
           </div>
           
         </template>
@@ -402,7 +402,7 @@ onMounted(async () => {
             <DatePicker v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
           </template>
           <template v-else-if="col.field == 'balance'" #filter="{ filterModel }">
-            <InputNumber v-model="filterModel.value" mode="currency" currency="ARS" locale="es-AR" />
+            <InputNumber v-model="filterModel.value" mode="currency" currency="ARS" locale="es-AR" placeholder="$9.999,99"/>
           </template>
           <template
             v-else-if="col.field != 'acciones'" 
@@ -419,7 +419,7 @@ onMounted(async () => {
                 </template>
               </template>
               <template #footer>
-                                  <div class="flex items-end justify-between gap-6">
+                                  <div class="flex items-end justify-end gap-6">
                                     <Button icon="pi pi-trash" text rounded aria-label="Confirm" @click="filterModel.value = null" v-tooltip.bottom="'Borrar selección'"></Button>
                                     <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterMultiSelect(col.field)" v-tooltip.bottom="'Confirmar selección'"></Button>
                                   </div>

@@ -346,15 +346,15 @@ onMounted(async () => {
 </template>
 <style scoped>
 .my-custom-button-clients {
-  background-color: #2563eb !important; /* Green background */
-  border: 1px solid #2563eb !important; /* Tomato border */
+  background-color: #1e40af !important; /* Green background */
+  border: 1px solid #1e40af !important; /* Tomato border */
   color: #e2e8f0 !important; /* White text */
 }
 
 .my-custom-button-clients-no-background {
-  /* background-color: #2563eb !important;  Green background */
-  border: 1px solid #2563eb !important; /* Tomato border */
-  color: #1d4ed8 !important; /* White text */
+  /* background-color: #1e40af !important;  Green background */
+  border: 1px solid #1e40af !important; /* Tomato border */
+  color: #1e40af !important; /* White text */
 }
 
 .severity-null {
