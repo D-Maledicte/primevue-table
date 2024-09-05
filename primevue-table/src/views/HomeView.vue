@@ -2,10 +2,10 @@
 import KpisSchema from '@/components/KpisSchema.vue';
 import MainTable from '@/components/MainTable.vue';
 import ClientsTable from '@/components/ClientsTable.vue';
-import { ref, onMounted, computed} from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 import { useMainTableDataStore } from '@/stores/mainTableData';
-import {fetchData, formatDateString} from "../components/services/formatFunctions.mjs"
+import { fetchData, formatDateString } from "../components/services/formatFunctions.mjs"
 ///Main deploy segmentation
 const produ = false;
 const Loader = ref(true);
@@ -26,39 +26,39 @@ const kpisPanelFlag = ref(false);
 const kpisToggle = (event) => {
   kpisPanel.value.toggle(event);
   kpisPanelFlag.value = !kpisPanelFlag.value;
-  
+
 };
 const kpisPanelState = computed(() => {
-  return kpisPanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
+  return kpisPanelFlag.value ? 'pi pi-minus' : 'pi pi-plus';
 })
 const kpisPanelTooltip = computed(() => {
-  return MainTablePanelFlag.value? 'Contraer' : 'Desplegar';
+  return MainTablePanelFlag.value ? 'Contraer' : 'Desplegar';
 })
 const MainTablePanel = ref();
 const MainTablePanelFlag = ref(false);
 const mainTablePanelToggle = (event) => {
   MainTablePanel.value.toggle(event);
   MainTablePanelFlag.value = !MainTablePanelFlag.value;
-  
+
 };
 const MainTablePanelState = computed(() => {
-  return MainTablePanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
+  return MainTablePanelFlag.value ? 'pi pi-minus' : 'pi pi-plus';
 })
 const MainTablePanelTooltip = computed(() => {
-  return MainTablePanelFlag.value? 'Contraer' : 'Desplegar';
+  return MainTablePanelFlag.value ? 'Contraer' : 'Desplegar';
 })
 const ClientsPanel = ref();
 const ClientsPanelFlag = ref(false);
 const clientsPanelToggle = (event) => {
   ClientsPanel.value.toggle(event);
   ClientsPanelFlag.value = !ClientsPanelFlag.value;
-  
+
 };
 const ClientsPanelState = computed(() => {
-  return ClientsPanelFlag.value? 'pi pi-minus' : 'pi pi-plus';
+  return ClientsPanelFlag.value ? 'pi pi-minus' : 'pi pi-plus';
 })
 const ClientsPanelTooltip = computed(() => {
-  return MainTablePanelFlag.value? 'Contraer' : 'Desplegar';
+  return MainTablePanelFlag.value ? 'Contraer' : 'Desplegar';
 })
 
 onMounted(async () => {
@@ -76,56 +76,57 @@ onMounted(async () => {
 
 <template>
   <main class="main_selector">
-    <div class="flex mt-6 card w-full justify-center" >
-        <div class="flex flex-col gap-20 p-8 w-full min-h-[30rem] justify-center">
-          <template v-if="Loader">
-            <div class="flex w-full justify-center">
-              <ProgressBar mode="indeterminate" style="height: 15px" class="w-6/12"></ProgressBar>
-            </div>
-          </template>
-          <template v-else>
-            <Panel collapsed class="w-full" ref="kpisPanel">
-              <template #header>
-                  <div class="flex justify-center align-center items-center gap-2">
-                    <Button :icon="kpisPanelState" rounded text @click="kpisToggle(event)" v-tooltip.right="kpisPanelTooltip"/>
-                    <span class="font-bold">Modelo: KPI´s (en construcción)</span>
-                  </div>
-              </template>
-              <template v-if="kpisPanelFlag">
-                <KpisSchema />
-              </template>
-              
-            </Panel>
-            <Panel collapsed class="w-full" ref="MainTablePanel">
-              <template #header>
-                  <div class="flex justify-center align-center items-center gap-2">
-                    <Button :icon="MainTablePanelState" rounded text @click="mainTablePanelToggle(event)" v-tooltip.right="MainTablePanelTooltip"/>
-                    <span class="font-bold">Modelo: Tabla anidada</span>
-                  </div>
-              </template>
-              <template v-if="MainTablePanelFlag && mainTableDataStore.initialized">
-                <MainTable :produ="produ"></MainTable>
-              </template>
-            </Panel>
-            <Panel collapsed class="w-full" ref="ClientsPanel">
-              <template #header>
-                  <div class="flex justify-center align-center items-center gap-2">
-                    <Button :icon="ClientsPanelState" rounded text @click="clientsPanelToggle(event)" v-tooltip.right="ClientsPanelTooltip"/>
-                    <span class="font-bold">Modelo: Tabla de clientes</span>
-                  </div>
-              </template>
-              <template v-if="ClientsPanelFlag">
-                <ClientsTable :produ="produ"></ClientsTable>
-              </template>
-            </Panel>
-          </template>
-        </div>
-      
+    <div class="flex mt-6 card w-full justify-center">
+      <div class="flex flex-col gap-20 md:p-8 w-full min-h-[30rem] justify-center">
+        <template v-if="Loader">
+          <div class="flex w-full justify-center">
+            <ProgressBar mode="indeterminate" style="height: 15px" class="w-6/12"></ProgressBar>
+          </div>
+        </template>
+        <template v-else>
+          <Panel collapsed class="w-full" ref="kpisPanel">
+            <template #header>
+              <div class="flex justify-center align-center items-center gap-2">
+                <Button :icon="kpisPanelState" rounded text @click="kpisToggle(event)"
+                  v-tooltip.right="kpisPanelTooltip" />
+                <span class="font-bold">Modelo: KPI´s (en construcción)</span>
+              </div>
+            </template>
+            <template v-if="kpisPanelFlag">
+              <KpisSchema />
+            </template>
+
+          </Panel>
+          <Panel collapsed class="w-full" ref="MainTablePanel">
+            <template #header>
+              <div class="flex justify-center align-center items-center gap-2">
+                <Button :icon="MainTablePanelState" rounded text @click="mainTablePanelToggle(event)"
+                  v-tooltip.right="MainTablePanelTooltip" />
+                <span class="font-bold">Modelo: Tabla anidada</span>
+              </div>
+            </template>
+            <template v-if="MainTablePanelFlag && mainTableDataStore.initialized">
+              <MainTable :produ="produ"></MainTable>
+            </template>
+          </Panel>
+          <Panel collapsed class="w-full" ref="ClientsPanel">
+            <template #header>
+              <div class="flex justify-center align-center items-center gap-2">
+                <Button :icon="ClientsPanelState" rounded text @click="clientsPanelToggle(event)"
+                  v-tooltip.right="ClientsPanelTooltip" />
+                <span class="font-bold">Modelo: Tabla de clientes</span>
+              </div>
+            </template>
+            <template v-if="ClientsPanelFlag">
+              <ClientsTable :produ="produ"></ClientsTable>
+            </template>
+          </Panel>
+        </template>
+      </div>
+
     </div>
   </main>
 
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

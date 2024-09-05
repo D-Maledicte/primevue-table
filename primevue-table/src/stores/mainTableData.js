@@ -5,6 +5,7 @@ export const useMainTableDataStore = defineStore('mainTableData', () => {
   // Estado
   const mainTableDataArray = ref([]);
   const initialized = ref(false);
+  const darkMode = ref(false);
   // Acciones
   const setMainTableDataArray = (data) => {
     mainTableDataArray.value = data;
@@ -12,6 +13,10 @@ export const useMainTableDataStore = defineStore('mainTableData', () => {
 
   const setInitialized = (bool) => {
     initialized.value = bool;
+  };
+
+  const setdarkMode = (bool) => {
+    darkMode.value = bool;
   };
   // Getters
   const filteredByRisk = computed(() => {
@@ -186,8 +191,10 @@ const filteredCreadosVsGanados = computed(() => {
   return {
     mainTableDataArray,
     initialized,
+    darkMode,
     setMainTableDataArray,
     setInitialized,
+    setdarkMode,
     filteredByRisk,
     filteredByWonLose,
     filteredPrimaByRiesgo,

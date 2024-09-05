@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, toRaw, computed } from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import {fetchData, formatDateString, formatDateForDisplay, filters_distinction, getSeveritySecondary, areObjectsEqual } from "./services/formatFunctions.mjs";
+import { fetchData, formatDateString, formatDateForDisplay, filters_distinction, getSeveritySecondary, areObjectsEqual } from "./services/formatFunctions.mjs";
 const props = defineProps({
   id_record: {
     type: String, // o el tipo de dato correcto
@@ -26,7 +26,7 @@ const secondaryFormatData = (data) => {
       ...item,
       fecha_bloqueo: formatDateString(item.fecha_bloqueo),
       fecha_cot_esp: formatDateString(item.fecha_cot_esp),
-      aviso: item.estado == "A la espera de informacion"? true : false
+      aviso: item.estado == "A la espera de informacion" ? true : false
     };
   });
   secondaryRepresentatives.value = updateSecondaryRepresentatives(newData);
@@ -35,7 +35,7 @@ const secondaryFormatData = (data) => {
 
 
 const filterByCotizacion = (id_cotizacion, data) => {
-  const secondaryRows = toRaw(data);  
+  const secondaryRows = toRaw(data);
   var filteredSecondaryTableRows = secondaryRows.filter(row => row.id_cotizacion == id_cotizacion);
 
   return secondaryFormatData(filteredSecondaryTableRows)
@@ -43,11 +43,11 @@ const filterByCotizacion = (id_cotizacion, data) => {
 const filters = ref();
 const secondaryfilteredProducts = ref();
 watch(secondaryfilteredProducts, (newValue, oldValue) => {
-      if (initialized.value) {
-      if (areObjectsEqual(newValue, oldValue) == false) {
-        animateNumber();
-      }
+  if (initialized.value) {
+    if (areObjectsEqual(newValue, oldValue) == false) {
+      animateNumber();
     }
+  }
 });
 const initSecondaryFilters = () => {
   filters.value = {
@@ -77,10 +77,10 @@ const onFilter = (event) => {
 }
 const localFilterValue = ref(filters.value.global.value);
 const updateFilter = debounce((value) => {
-      filters.value.global.value = value;
-    }, 1000);
+  filters.value.global.value = value;
+}, 1000);
 watch(localFilterValue, (newValue) => {
-      updateFilter(newValue);
+  updateFilter(newValue);
 });
 
 
@@ -90,7 +90,7 @@ const procesarSecondaryOperacion = (target) => {
   let fecha_bloqueo = formatDateForDisplay(target.fecha_bloqueo);
   let fecha_cot_esp = formatDateForDisplay(target.fecha_cot_esp);
   //let aviso = target.aviso;
-  let query = "Aseguradora: " + aseguradora + ", " + "Estado: " + estado + ", " + "Fecha de bloqueo: " + fecha_bloqueo + ", " + "Cierre Estimado: " + fecha_cot_esp  
+  let query = "Aseguradora: " + aseguradora + ", " + "Estado: " + estado + ", " + "Fecha de bloqueo: " + fecha_bloqueo + ", " + "Cierre Estimado: " + fecha_cot_esp
   window.open('https://search.brave.com/search?q=' + query + '&source=desktop', '_blank');
 };
 const products = ref(new Array(1));
@@ -169,23 +169,23 @@ const filteredProductsCount = computed(() => {
 const sortIcons = computed(() => {
   return (sorted, sortOrder) => {
     if (sorted == null) {
-    return 'pi pi-sort-alt';
-  } else {
-    if (sortOrder == -1) {
-      return 'pi pi-sort-amount-up';
-    } else if (sortOrder == 0) {
       return 'pi pi-sort-alt';
-    } 
-    else {
-      return 'pi pi-sort-amount-down';
+    } else {
+      if (sortOrder == -1) {
+        return 'pi pi-sort-amount-up';
+      } else if (sortOrder == 0) {
+        return 'pi pi-sort-alt';
+      }
+      else {
+        return 'pi pi-sort-amount-down';
+      }
     }
-  }
   }
 })
 
 const dt = ref();
 const exportCSV = () => {
-    dt.value.exportCSV();
+  dt.value.exportCSV();
 };
 
 onMounted(async () => {
@@ -196,137 +196,153 @@ onMounted(async () => {
     const { secondaryTable } = await import('@/assets/dataset.mjs');
     SecondaryTableRows.value = filterByCotizacion(props.id_record, secondaryTable);
   }
-  animateNumber(); 
+  animateNumber();
   setTimeout(() => {
     products.value = SecondaryTableRows.value;
     Loader.value = false;
-    
-      animateNumber(); // Ajusta el tiempo según sea necesario
+
+    animateNumber(); // Ajusta el tiempo según sea necesario
   }, 1000);
   initialized.value = true;
 });
 </script>
 
 <template>
-  <DataTable v-model:filters="filters" :globalFilterFields="['estado', 'aseguradora']" filterDisplay="menu" :value="products" @filter="onFilter" tableStyle="min-width: 50rem" ref="dt" stripedRows paginator :rows="5"
-            :rowsPerPageOptions="[5, 10, 20, 50]">
-              <template #header>
-              <div class="flex justify-between">
-                <div class="flex gap-2">
-                  <IconField>
-                  <InputIcon>
-                    <i class="pi pi-search" />
-                  </InputIcon>
-                  <InputText v-model="filters['global'].value" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" placeholder="Busqueda general" />
-                </IconField>
-                  <Button type="button" icon="pi pi-trash" label="Limpiar" :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined @click="clearSecondaryFilter()" v-tooltip.bottom="'Limpiar filtro'"/>
-                
-                </div>
-                <div class="flex justify-end gap-4">
-                  <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-secondary' } }" @click="exportCSV($event)" v-tooltip.bottom="'Exportar tabla como CSV'"/>
-                </div>
-              </div>
-              </template>
-              <template #empty> No hay registros que coincidan con la busqueda </template>
-              <template #loading> Cargando Información </template>
-              <Column v-for="col of secondaryColumns"
-                :sortable="col.field != 'aviso' && col.field != 'acciones' ? true : false" :key="col.id_pedido"
-                :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)">
-                <template #filtericon>
-                <i class="pi pi-filter" v-tooltip.bottom="'Opciones de filtrado'"/>
-                </template>
-                <template #sorticon="{ sorted, sortOrder }">
-                      <i :class="sortIcons(sorted, sortOrder)" v-tooltip.bottom="'Ordenar resultados'"/>
-                </template>
-                <template #body="{ data }">
-                  <template v-if="Loader">
-                    <Skeleton></Skeleton>
-                  </template>
-                  <template v-else>
-                    <template v-if="col.field == 'acciones'">
-                    <ButtonGroup class="flex gap-px">
-                      <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel" size="small"
-                        v-tooltip.bottom="'Mas info'" @click="emitShowLogsTable(data)" />
-                      <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel" size="small"
-                        v-tooltip.bottom="'Responder pedido'" @click="procesarSecondaryOperacion(data)" />
-                      <Button icon="pi pi-check" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel" size="small"
-                        v-tooltip.bottom="'Dar de alta'" @click="procesarSecondaryOperacion(data)"/>
-                    </ButtonGroup>
-                  </template>
-                  <template v-else-if="col.field == 'aviso'">
-                    <div class="flex justify-center align-center w-full h-4/5">
-                      <i class="pi"
-                      :class="{ 'pi-check-circle text-red-500 ': data[col.field], 'pi-circle': !data[col.field] }"></i>
-                    </div>
-                  </template>
-                  <template v-else-if="col.field == 'estado'">
-              <div class="flex justify-center align-center w-full h-4/5">
-                <Tag :value="data[col.field]" class="w-8/12 h-1/5 text-nowrap" v-bind="getSeveritySecondary(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeveritySecondary(data[col.field])}"></Tag>
+  <DataTable v-model:filters="filters" :globalFilterFields="['estado', 'aseguradora']" filterDisplay="menu"
+    :value="products" @filter="onFilter" tableStyle="min-width: 50rem" ref="dt" stripedRows paginator :rows="5"
+    :rowsPerPageOptions="[5, 10, 20, 50]">
+    <template #header>
+      <div class="flex md:flex-row lg:justify-between lg:gap-4 gap-2 w-full">
+        <div class="flex flex-row md:justify-end justify-center md:gap-4 gap-2">
+          <div class="flex justify-center">
+            <IconField>
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText v-model="filters['global'].value"
+                :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" placeholder="Busqueda general" />
+            </IconField>
+          </div>
+          <Button type="button" icon="pi pi-trash" label="Limpiar"
+            :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined
+            @click="clearSecondaryFilter()" v-tooltip.bottom="'Limpiar filtro'" />
+
+        </div>
+        <div class="flex flex-row gap-2 md:justify-normal justify-center md:m-0 mx-4">
+          <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-secondary' } }"
+            @click="exportCSV($event)" v-tooltip.bottom="'Exportar tabla como CSV'" />
+        </div>
+      </div>
+    </template>
+    <template #empty> No hay registros que coincidan con la busqueda </template>
+    <template #loading> Cargando Información </template>
+    <Column v-for="col of secondaryColumns" :sortable="col.field != 'aviso' && col.field != 'acciones' ? true : false"
+      :key="col.id_pedido" :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)">
+      <template #filtericon>
+        <i class="pi pi-filter" v-tooltip.bottom="'Opciones de filtrado'" />
+      </template>
+      <template #sorticon="{ sorted, sortOrder }">
+        <i :class="sortIcons(sorted, sortOrder)" v-tooltip.bottom="'Ordenar resultados'" />
+      </template>
+      <template #body="{ data }">
+        <template v-if="Loader">
+          <Skeleton></Skeleton>
+        </template>
+        <template v-else>
+          <template v-if="col.field == 'acciones'">
+            <ButtonGroup class="flex gap-px">
+              <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button-secondary' } }"
+                aria-label="Cancel" size="small" v-tooltip.bottom="'Mas info'" @click="emitShowLogsTable(data)" />
+              <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel"
+                size="small" v-tooltip.bottom="'Responder pedido'" @click="procesarSecondaryOperacion(data)" />
+              <Button icon="pi pi-check" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel"
+                size="small" v-tooltip.bottom="'Dar de alta'" @click="procesarSecondaryOperacion(data)" />
+            </ButtonGroup>
+          </template>
+          <template v-else-if="col.field == 'aviso'">
+            <div class="flex justify-center align-center w-full h-4/5">
+              <i class="pi"
+                :class="{ 'pi-check-circle text-red-500 ': data[col.field], 'pi-circle': !data[col.field] }"></i>
+            </div>
+          </template>
+          <template v-else-if="col.field == 'estado'">
+            <div class="flex justify-center align-center w-full h-4/5">
+              <Tag :value="data[col.field]" class="w-8/12 h-1/5 text-nowrap"
+                v-bind="getSeveritySecondary(data[col.field]) == null ? { class: 'severity-null' } : { severity: getSeveritySecondary(data[col.field]) }">
+              </Tag>
+            </div>
+          </template>
+          <template v-else>
+            <div class="flex justify-center align-center w-full h-4/5">
+              <p class="w-full h-1/5 font-semibold text-center">
+                {{ col.field == "fecha_bloqueo" || col.field == 'fecha_cot_esp' ? formatDateForDisplay(data[col.field])
+                  :
+                  data[col.field] }}
+              </p>
+            </div>
+          </template>
+        </template>
+      </template>
+      <!-- Podriamos reversionar la primer columna de todas las tablas para hacer universal este setup de filters -->
+      <template v-if="col.field == 'aseguradora'" #filter="{ filterModel }">
+        <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
+      </template>
+      <template v-else-if="(col.field).includes('fecha')" #filter="{ filterModel }">
+        <DatePicker v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
+      </template>
+      <template v-else-if="col.field == 'aviso'" #filter="{ filterModel }">
+        <div class="flex justify-between items-center">
+          <span>Activo / Inactivo</span>
+          <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary />
+        </div>
+      </template>
+      <template v-else-if="col.field != 'acciones'" #filter="{ filterModel }">
+        <MultiSelect v-model="filterModel.value" :options="secondaryRepresentatives[col.field]"
+          :selectedItemsLabel="'{0} opciones elegidas'" :maxSelectedLabels="2" class="w-60" placeholder="Todos">
+          <template #option="slotProps">
+            <template v-if="col.field == 'estado'">
+              <div class="flex items-center gap-2">
+                <Tag :value="slotProps.option"
+                  v-bind="getSeveritySecondary(slotProps.option) == null ? { class: 'severity-null' } : { severity: getSeveritySecondary(slotProps.option) }">
+                </Tag>
               </div>
             </template>
-                  <template v-else>
-                    <div class="flex justify-center align-center w-full h-4/5">
-                      <p class="w-full h-1/5 font-semibold text-center">
-                        {{ col.field == "fecha_bloqueo" || col.field == 'fecha_cot_esp' ? formatDateForDisplay(data[col.field]) :
-                        data[col.field] }}
-                      </p>
-                    </div>
-                  </template>
-                  </template>
-                </template>
-                <!-- Podriamos reversionar la primer columna de todas las tablas para hacer universal este setup de filters -->
-                <template v-if="col.field == 'aseguradora'" #filter="{ filterModel }">
-                  <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
-                </template>
-                <template v-else-if="(col.field).includes('fecha')" #filter="{ filterModel }">
-                  <DatePicker v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
-                </template>
-                <template v-else-if="col.field == 'aviso'" #filter="{ filterModel }">
-                <div class="flex justify-between items-center">
-                  <span>Activo / Inactivo</span>
-                  <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary/>
-                </div>
-                </template>
-                <template
-                  v-else-if="col.field != 'acciones'" 
-                  #filter="{ filterModel }">
-                  <MultiSelect v-model="filterModel.value" :options="secondaryRepresentatives[col.field]" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-60" placeholder="Todos">
-                    <template #option="slotProps">
-                      <template v-if="col.field == 'estado'">
-                  <div class="flex items-center gap-2">
-                    <Tag :value="slotProps.option" v-bind="getSeveritySecondary(slotProps.option) == null? { class: 'severity-null'} : { severity: getSeveritySecondary(slotProps.option)}"></Tag>
-                </div>
-                </template>
-                <template v-else>
-                  <span>{{ slotProps.option }}</span>
-                </template>
-                    </template>
-                  </MultiSelect>
-                </template>
-              </Column>
-              <template #footer> 
-                <div class="flex flex-start gap-2">
-                  <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button-secondary' } }"></Tag>
-                </div>
-              </template>
+            <template v-else>
+              <span>{{ slotProps.option }}</span>
+            </template>
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <template #footer>
+      <div class="flex flex-start gap-2">
+        <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button-secondary' } }">
+        </Tag>
+      </div>
+    </template>
   </DataTable>
 </template>
 
 <style scoped>
 .my-custom-button-secondary {
-  background-color: #2563eb !important; /* Green background */
-  border: 1px solid #2563eb !important; /* Tomato border */
-  color: #e2e8f0 !important; /* White text */
+  background-color: #2563eb !important;
+  /* Green background */
+  border: 1px solid #2563eb !important;
+  /* Tomato border */
+  color: #e2e8f0 !important;
+  /* White text */
 }
 
 .my-custom-button-secondary-no-background {
   /* background-color: #2563eb !important;  Green background */
-  border: 1px solid #2563eb !important; /* Tomato border */
-  color: #1d4ed8 !important; /* White text */
+  border: 1px solid #2563eb !important;
+  /* Tomato border */
+  color: #1d4ed8 !important;
+  /* White text */
 }
 
 .severity-null {
-  background-color : #f1f5f9 !important;
+  background-color: #f1f5f9 !important;
   color: #334155 !important;
 }
 </style>

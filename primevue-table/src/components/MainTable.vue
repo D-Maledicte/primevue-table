@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, toRaw, computed} from 'vue';
+import { ref, onMounted, watch, toRaw, computed } from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
 import { formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getPrimaAseguradaNonCurrency, areObjectsEqual } from "../components/services/formatFunctions.mjs"
 import { useMainTableDataStore } from '@/stores/mainTableData';
@@ -16,12 +16,12 @@ const MultiSelectReferences = ref({});
 /// Visual effects
 const screenMode = ref("pi pi-moon");
 const toggleColorScheme = () => {
-    const element = document.querySelector('html');
-    element.classList.toggle('my-app-dark');
-    screenMode.value = screenMode.value == "pi pi-sun"? "pi pi-moon" : "pi pi-sun";
+  const element = document.querySelector('html');
+  element.classList.toggle('my-app-dark');
+  screenMode.value = screenMode.value == "pi pi-sun" ? "pi pi-moon" : "pi pi-sun";
+  mainTableDataStore.darkMode == false ? mainTableDataStore.setdarkMode(true) : mainTableDataStore.setdarkMode(false);
 };
 const Loader = ref(true);
-const screenWidth = ref(window.innerWidth);
 const dialogState = ref();
 const dialogMaximize = (event) => {
   dialogState.value.maximize(event);
@@ -62,14 +62,14 @@ const debounce = (func, wait) => {
 };
 const onFilter = (event) => {
   filteredProducts.value = toRaw(event.filteredValue);
-  
+
 }
 const localFilterValue = ref(filters.value.global.value);
 const updateFilter = debounce((value) => {
-      filters.value.global.value = value;
-    }, 1000);
+  filters.value.global.value = value;
+}, 1000);
 watch(localFilterValue, (newValue) => {
-      updateFilter(newValue);
+  updateFilter(newValue);
 });
 
 const applyFilterMultiSelect = (field) => {
@@ -94,7 +94,8 @@ const procesarOperacion = (target) => {
 const showLogsTable = (data) => {
   logs.value = data.id_pedido;
   visible.value = true;
-  if (screenWidth.value <= 1080) {
+  const screenWidth = ref(window.innerWidth);
+  if (screenWidth.value <= 1081) {
     dialogMaximize();
   }
 };
@@ -105,12 +106,12 @@ const initialized = ref(false);
 const products = ref(new Array(5));
 const filteredProducts = ref();
 watch(filteredProducts, (newValue, oldValue) => {
-      if (initialized.value) {
-      if (areObjectsEqual(newValue, oldValue) == false) {
-        animateNumber();
-        animateCurrency();
-      }
+  if (initialized.value) {
+    if (areObjectsEqual(newValue, oldValue) == false) {
+      animateNumber();
+      animateCurrency();
     }
+  }
 });
 const logs = ref();
 const visible = ref(false);
@@ -215,23 +216,23 @@ const animateCurrency = () => {
 
 const dt = ref();
 const exportCSV = () => {
-    dt.value.exportCSV();
+  dt.value.exportCSV();
 };
 
 const sortIcons = computed(() => {
   return (sorted, sortOrder) => {
     if (sorted == null) {
-    return 'pi pi-sort-alt';
-  } else {
-    if (sortOrder == -1) {
-      return 'pi pi-sort-amount-up';
-    } else if (sortOrder == 0) {
       return 'pi pi-sort-alt';
-    } 
-    else {
-      return 'pi pi-sort-amount-down';
+    } else {
+      if (sortOrder == -1) {
+        return 'pi pi-sort-amount-up';
+      } else if (sortOrder == 0) {
+        return 'pi pi-sort-alt';
+      }
+      else {
+        return 'pi pi-sort-amount-down';
+      }
     }
-  }
   }
 })
 const expandIcons = computed(() => {
@@ -266,213 +267,218 @@ onMounted(async () => {
 
 </script>
 <template>
-  <DataTable v-model:filters="filters"
-        :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']" filterDisplay="menu"
-        :value="products" stripedRows paginator :rows="10"
-        :rowsPerPageOptions="[5, 10, 20, 50]" size="small" tableStyle="min-width: 110rem; width: 110rem" ref="dt" :expandedRows="expandedRows"
-        @filter="onFilter" scrollable scrollHeight="590px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-mainTable-session">
-        <template #header>
-          <div class="flex justify-between">
-            <div class="flex gap-2">
-              <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }" @click="toggleColorScheme()" v-tooltip.right="'Alternar modo nocturno'"/>
-              <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.right="'Exportar tabla como CSV'" :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
+  <div class="w-full flex justify-center">
+    <DataTable v-model:filters="filters" :globalFilterFields="['titulo', 'riesgo', 'estado', 'tomador']"
+      filterDisplay="menu" :value="products" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]"
+      size="small" class="w-11/12" ref="dt" :expandedRows="expandedRows" @filter="onFilter" scrollable
+      scrollHeight="590px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-mainTable-session">
+      <template #header>
+        <div class="flex md:flex-row flex-col md:justify-between justify-center md:gap-0 gap-4">
+          <div class="flex flex-row gap-2 md:justify-normal justify-center md:m-0 mx-4">
+            <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }"
+              @click="toggleColorScheme()" v-tooltip.right="'Alternar modo nocturno'" />
+            <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.right="'Exportar tabla como CSV'"
+              :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
+          </div>
+          <div class="flex flex-row md:justify-end justify-center  md:gap-4 gap-2">
+            <Button type="button" icon="pi pi-trash" label="Limpiar" v-tooltip.bottom="'Limpiar filtro'"
+              :pt="{ root: { class: 'my-custom-button-main-no-background' } }" outlined @click="clearFilter()" />
+            <div class="flex justify-center">
+              <IconField>
+                <InputIcon>
+                  <i class="pi pi-search" />
+                </InputIcon>
+                <InputText v-model="localFilterValue" placeholder="Busqueda general" />
+              </IconField>
             </div>
-            <div class="flex justify-end gap-4">
-            <Button type="button" icon="pi pi-trash" label="Limpiar" v-tooltip.bottom="'Limpiar filtro'" :pt="{ root: { class: 'my-custom-button-main-no-background' } }" outlined @click="clearFilter()" />
-            <IconField>
-              <InputIcon>
-                <i class="pi pi-search" />
-              </InputIcon>
-              <InputText v-model="localFilterValue" placeholder="Busqueda general" />
-            </IconField>
           </div>
-          </div>
-          
-        </template>
-        <template #empty>
-          <div class="flex flex-col justify-center content-center items-center w-full">
-            
-          <svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 64 64"
-  width="140"
-  height="140"
-  fill="#8FA3AD"
->
-  <!-- Fondo -->
-  <rect
-    x="8"
-    y="12"
-    width="48"
-    height="40"
-    rx="4"
-    ry="4"
-    fill="#DAE3E7"
-    stroke="#8FA3AD"
-    stroke-width="2"
-  />
-  <!-- Cara triste -->
-  <circle cx="24" cy="30" r="2" fill="#8FA3AD" />
-  <circle cx="40" cy="30" r="2" fill="#8FA3AD" />
-  <path
-    d="M28,38 C28,36 36,36 36,38"
-    stroke="#8FA3AD"
-    stroke-width="2"
-    fill="none"
-  />
-  <!-- Lupa -->
-  <circle cx="44" cy="44" r="10" stroke="#8FA3AD" stroke-width="2" fill="none" />
-  <line x1="50" y1="50" x2="60" y2="60" stroke="#8FA3AD" stroke-width="2" />
-  <!-- Papel doblado -->
-  <path
-    d="M40 12 H48 V20"
-    fill="#FFF"
-    stroke="#8FA3AD"
-    stroke-width="2"
-  />
+        </div>
+
+      </template>
+      <template #empty>
+        <div class="flex flex-col justify-center content-center items-center w-full">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="140" height="140" fill="#8FA3AD">
+            <!-- Fondo -->
+            <rect x="8" y="12" width="48" height="40" rx="4" ry="4" fill="#DAE3E7" stroke="#8FA3AD" stroke-width="2" />
+            <!-- Cara triste -->
+            <circle cx="24" cy="30" r="2" fill="#8FA3AD" />
+            <circle cx="40" cy="30" r="2" fill="#8FA3AD" />
+            <path d="M28,38 C28,36 36,36 36,38" stroke="#8FA3AD" stroke-width="2" fill="none" />
+            <!-- Lupa -->
+            <circle cx="44" cy="44" r="10" stroke="#8FA3AD" stroke-width="2" fill="none" />
+            <line x1="50" y1="50" x2="60" y2="60" stroke="#8FA3AD" stroke-width="2" />
+            <!-- Papel doblado -->
+            <path d="M40 12 H48 V20" fill="#FFF" stroke="#8FA3AD" stroke-width="2" />
           </svg>
-          <p class="font-normal">No hay registros que coincidan con la búsqueda</p>
-          </div>
-          
+          <p class="font-normal text-gray-500">No hay registros que coincidan con la búsqueda</p>
+        </div>
+
+      </template>
+      <!-- <template #loading> Cargando Información </template> -->
+      <Column style="width: 4rem">
+        <template #body="slotProps">
+          <template v-if="Loader">
+            <Skeleton></Skeleton>
+          </template>
+          <template v-else>
+            <div class="flex flex-center items-center justify-center w-full">
+              <Button :icon="expandIcons(slotProps.data.id_cotizacion)"
+                :pt="{ root: { class: 'my-custom-button-main-no-background-no-border' } }" text rounded
+                aria-label="Expand" @click.stop="onExpandRow(slotProps.data.id_cotizacion)"
+                v-tooltip.right="expandTooltip(slotProps.data.id_cotizacion)" />
+            </div>
+          </template>
         </template>
-        <!-- <template #loading> Cargando Información </template> -->
-        <Column style="width: 4rem">
-          <template #body="slotProps">
-            <template v-if="Loader">
-              <Skeleton></Skeleton>
-            </template>
-            <template v-else>
-              <div class="flex flex-center items-center justify-center w-full">
-                  <Button :icon="expandIcons(slotProps.data.id_cotizacion)" :pt="{ root: { class: 'my-custom-button-main-no-background-no-border' } }" text rounded aria-label="Expand" @click.stop="onExpandRow(slotProps.data.id_cotizacion)" v-tooltip.right="expandTooltip(slotProps.data.id_cotizacion)"/>
-                </div>
-            </template>
-          </template>
-        </Column>
-        <Column v-for="col of mainColumns" :sortable="col.field != 'acciones' ? true : false"
-          :key="col.id_cotizacion" :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)" style="max-width: 15rem;">
-          <template #filtericon>
-                <i class="pi pi-filter" v-tooltip.bottom="'Opciones de filtrado'"/>
-          </template>
-          <template #sorticon="{ sorted, sortOrder }">
-                <i :class="sortIcons(sorted, sortOrder)" v-tooltip.bottom="'Ordenar resultados'"/>
-          </template>
-          
-          <template #body="{ data }">
-            <div class="flex justify-center align-center">
+      </Column>
+      <Column v-for="col of mainColumns" :sortable="col.field != 'acciones' ? true : false" :key="col.id_cotizacion"
+        :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)" style="max-width: 15rem;">
+        <template #filtericon>
+          <i class="pi pi-filter" v-tooltip.bottom="'Opciones de filtrado'" />
+        </template>
+        <template #sorticon="{ sorted, sortOrder }">
+          <i :class="sortIcons(sorted, sortOrder)" v-tooltip.bottom="'Ordenar resultados'" />
+        </template>
+
+        <template #body="{ data }">
+          <div class="flex justify-center align-center">
             <template v-if="Loader">
               <Skeleton></Skeleton>
             </template>
             <template v-else>
               <template v-if="col.field == 'acciones'">
-              <ButtonGroup>
-                <Button icon="pi pi-times"  aria-label="Cancel" size="small" :pt="{ root: { class: 'my-custom-button-main' } }" v-tooltip.bottom="'Cerrar cotizacion'" @click="procesarOperacion(data)"/>
-              </ButtonGroup>
-            </template>
-            <template v-else-if="col.field == 'balance'">
-              <div class="flex justify-center align-center w-full h-4/5">
-                <p class="w-11/12 h-1/5 text-md font-semibold text-left">
-                {{ formatCurrency(data.balance) }}
-              </p>
-              </div>
-            </template>
-            <template v-else-if="col.field == 'estado'">
-              <div class="flex justify-center align-center w-full h-4/5">
-                <Tag :value="data[col.field]" class="w-11/12 h-1/5 text-nowrap" v-bind="getSeverityMain(data[col.field]) == null? { class: 'severity-null'} : { severity: getSeverityMain(data[col.field])}"></Tag>
-              </div>
-            </template>
-            <template v-else>
-              <div class="flex justify-center align-center w-full h-4/5">
-                <p class="w-11/12 h-1/5 text-md font-semibold text-left">
-                  {{ col.field.includes('fecha') ? formatDateForDisplay(data[col.field]) :
-                  data[col.field] }}
-                </p>
-              </div>
-            </template>
-            </template>
-          </div>
-          </template>
-          <!-- Podriamos reversionar la primer columna de todas las tablas para hacer universal este setup de filters -->
-          <template v-if="col.field == 'titulo'" #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
-          </template>
-          <template v-if="col.field == 'tomador'" #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
-          </template>
-          <template v-else-if="(col.field).includes('fecha')" #filter="{ filterModel }">
-            <DatePicker v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
-          </template>
-          <template v-else-if="col.field == 'balance'" #filter="{ filterModel }">
-            <InputNumber v-model="filterModel.value" mode="currency" currency="ARS" locale="es-AR" placeholder="$9.999,99"/>
-          </template>
-          <template
-            v-else-if="col.field != 'acciones'" 
-            #filter="{ filterModel }" >
-            <MultiSelect v-model="filterModel.value" :ref="(el) => MultiSelectReferences[col.field] = el" :options="representatives[col.field]" :selectedItemsLabel="'{0} opciones elegidas' " :maxSelectedLabels="2" class="w-60" placeholder="Todos">
-              <template #option="slotProps">
-                <template v-if="col.field == 'estado'">
-                  <div class="flex items-center gap-2">
-                    <Tag :value="slotProps.option" v-bind="getSeverityMain(slotProps.option) == null? { class: 'severity-null'} : { severity: getSeverityMain(slotProps.option)}"></Tag>
+                <ButtonGroup>
+                  <Button icon="pi pi-times" aria-label="Cancel" size="small"
+                    :pt="{ root: { class: 'my-custom-button-main' } }" v-tooltip.bottom="'Cerrar cotizacion'"
+                    @click="procesarOperacion(data)" />
+                </ButtonGroup>
+              </template>
+              <template v-else-if="col.field == 'balance'">
+                <div class="flex justify-center align-center w-full h-4/5">
+                  <p class="w-11/12 h-1/5 text-md font-semibold text-left">
+                    {{ formatCurrency(data.balance) }}
+                  </p>
                 </div>
-                </template>
-                <template v-else>
-                  <span>{{ slotProps.option }}</span>
-                </template>
               </template>
-              <template #footer>
-                                  <div class="flex items-end justify-end gap-6">
-                                    <Button icon="pi pi-trash" text rounded aria-label="Confirm" @click="filterModel.value = null" v-tooltip.bottom="'Borrar selección'"></Button>
-                                    <Button icon="pi pi-check-square" text rounded aria-label="Confirm" @click="applyFilterMultiSelect(col.field)" v-tooltip.bottom="'Confirmar selección'"></Button>
-                                  </div>
+              <template v-else-if="col.field == 'estado'">
+                <div class="flex justify-center align-center w-full h-4/5">
+                  <Tag :value="data[col.field]" class="w-11/12 h-1/5 text-nowrap"
+                    v-bind="getSeverityMain(data[col.field]) == null ? { class: 'severity-null' } : { severity: getSeverityMain(data[col.field]) }">
+                  </Tag>
+                </div>
               </template>
-            </MultiSelect>
-          </template>
-        </Column>
-        <template #expansion="slotProps">
-          <div class="p-2">
-            <ExpansionTable :id_record="slotProps.data.id_cotizacion" :produ="props.produ" @showLogsTable="showLogsTable"></ExpansionTable>
+              <template v-else>
+                <div class="flex justify-center align-center w-full h-4/5">
+                  <p class="w-11/12 h-1/5 text-md font-semibold text-left">
+                    {{ col.field.includes('fecha') ? formatDateForDisplay(data[col.field]) :
+                      data[col.field] }}
+                  </p>
+                </div>
+              </template>
+            </template>
           </div>
         </template>
-        <template #footer>
-          <div class="flex flex-start gap-2">
-          <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button-main' } }"></Tag>
-          <Tag :value="`Prima asegurada por: ${formattedCurrency}`" :pt="{ root: { class: 'my-custom-button-main' } }"></Tag>
-          </div>
+        <!-- Podriamos reversionar la primer columna de todas las tablas para hacer universal este setup de filters -->
+        <template v-if="col.field == 'titulo'" #filter="{ filterModel }">
+          <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
         </template>
-      </DataTable>
-      <Dialog v-model:visible="visible" ref="dialogState" maximizable modal class="w-2/5 h-4/5" dismissableMask pt:root:class="!border-0 ">
-        <template #container="{ closeCallback, maximizeCallback}">
-          <div class="flex flex-col px-4 py-4 gap-6 rounded-lg info-table-container">
-              <InfoTable v-if="visible" :id_record="logs" :produ="props.produ" @closeCallbackDialog="closeCallback" @maximizeCallbackDialog="maximizeCallback"/>
-          </div>
+        <template v-if="col.field == 'tomador'" #filter="{ filterModel }">
+          <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
         </template>
-      </Dialog>
+        <template v-else-if="(col.field).includes('fecha')" #filter="{ filterModel }">
+          <DatePicker v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
+        </template>
+        <template v-else-if="col.field == 'balance'" #filter="{ filterModel }">
+          <InputNumber v-model="filterModel.value" mode="currency" currency="ARS" locale="es-AR"
+            placeholder="$9.999,99" />
+        </template>
+        <template v-else-if="col.field != 'acciones'" #filter="{ filterModel }">
+          <MultiSelect v-model="filterModel.value" :ref="(el) => MultiSelectReferences[col.field] = el"
+            :options="representatives[col.field]" :selectedItemsLabel="'{0} opciones elegidas'" :maxSelectedLabels="2"
+            class="w-60" placeholder="Todos">
+            <template #option="slotProps">
+              <template v-if="col.field == 'estado'">
+                <div class="flex items-center gap-2">
+                  <Tag :value="slotProps.option"
+                    v-bind="getSeverityMain(slotProps.option) == null ? { class: 'severity-null' } : { severity: getSeverityMain(slotProps.option) }">
+                  </Tag>
+                </div>
+              </template>
+              <template v-else>
+                <span>{{ slotProps.option }}</span>
+              </template>
+            </template>
+            <template #footer>
+              <div class="flex items-end justify-end gap-6">
+                <Button icon="pi pi-trash" text rounded aria-label="Confirm" @click="filterModel.value = null"
+                  v-tooltip.bottom="'Borrar selección'"></Button>
+                <Button icon="pi pi-check-square" text rounded aria-label="Confirm"
+                  @click="applyFilterMultiSelect(col.field)" v-tooltip.bottom="'Confirmar selección'"></Button>
+              </div>
+            </template>
+          </MultiSelect>
+        </template>
+      </Column>
+      <template #expansion="slotProps">
+        <div class="p-2">
+          <ExpansionTable :id_record="slotProps.data.id_cotizacion" :produ="props.produ" @showLogsTable="showLogsTable">
+          </ExpansionTable>
+        </div>
+      </template>
+      <template #footer>
+        <div class="flex flex-start gap-2">
+          <Tag :value="`Numero de registros: ${startingNumber}`" :pt="{ root: { class: 'my-custom-button-main' } }">
+          </Tag>
+          <Tag :value="`Prima asegurada por: ${formattedCurrency}`" :pt="{ root: { class: 'my-custom-button-main' } }">
+          </Tag>
+        </div>
+      </template>
+    </DataTable>
+  </div>
+  <Dialog v-model:visible="visible" ref="dialogState" maximizable modal class="w-2/5 h-4/5" dismissableMask
+    pt:root:class="!border-0 ">
+    <template #container="{ closeCallback, maximizeCallback }">
+      <div class="flex flex-col px-4 py-4 gap-6 rounded-lg info-table-container">
+        <InfoTable v-if="visible" :id_record="logs" :produ="props.produ" @closeCallbackDialog="closeCallback"
+          @maximizeCallbackDialog="maximizeCallback" />
+      </div>
+    </template>
+  </Dialog>
 </template>
 <style scoped>
 .my-custom-button-main {
-  background-color: #1e40af !important; /* Green background */
-  border: 1px solid #1e40af !important; /* Tomato border */
-  color: #e2e8f0 !important; /* White text */
+  background-color: #1e40af !important;
+  /* Green background */
+  border: 1px solid #1e40af !important;
+  /* Tomato border */
+  color: #e2e8f0 !important;
+  /* White text */
 }
 
 .my-custom-button-main-no-background {
   /* background-color: #1e40af !important;  Green background */
-  border: 1px solid #1e40af !important; /* Tomato border */
-  color: #1e40af !important; /* White text */
+  border: 1px solid #1e40af !important;
+  /* Tomato border */
+  color: #1e40af !important;
+  /* White text */
 }
 
 .my-custom-button-main-no-background-no-color {
   /* background-color: #1e40af !important;  Green background */
   /* border: 1px solid #1e40af !important;  Tomato border */
-  color: #1e40af !important; /* White text */
+  color: #1e40af !important;
+  /* White text */
 }
+
 .my-custom-button-main-no-background-no-border {
   /* background-color: #1e40af !important;  Green background */
   /* border: 1px solid #1e40af !important;  Tomato border */
-  color: #1e40af !important; /* White text */
+  color: #1e40af !important;
+  /* White text */
 }
 
 .severity-null {
-  background-color : #f1f5f9 !important;
+  background-color: #f1f5f9 !important;
   color: #334155 !important;
 }
 
@@ -480,17 +486,18 @@ onMounted(async () => {
   scrollbar-gutter: stable both-edges;
   overflow: overlay;
 }
+
 /* Estilos para navegadores basados en WebKit/Blink (Chrome, Brave, Edge, Safari) */
 ::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+  background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
+  background: #888;
+  border-radius: 10px;
 }
 </style>
