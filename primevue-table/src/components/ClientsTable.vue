@@ -132,7 +132,10 @@ const getClientsPlaceholder = (header) => {
     console.log(header);
     return header == 'DNI / Cuil' || header == 'Telefono' ? `${header} comienza en` : `Buscar por ${header}`;
 }
-
+const getClearFilterLabel = () => {
+  const screenWidth = ref(window.innerWidth);
+  return screenWidth.value < 700 ? '' : 'Limpiar';
+}
 const dt = ref();
 const exportCSV = () => {
   dt.value.exportCSV();
@@ -162,25 +165,25 @@ onMounted(async () => {
       :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" scrollable scrollHeight="590px" stateStorage="session"
       stateKey="dt-state-client-session">
       <template #header>
-        <div class="flex md:flex-row flex-col md:justify-between justify-center md:gap-0 gap-4">
-          <div class="flex flex-row gap-2 md:justify-normal justify-center md:m-0 mx-4">
-            <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-clients' } }"
-              @click="exportCSV($event)" v-tooltip.right="'Exportar tabla como CSV'" />
-          </div>
-          <div class="flex flex-row md:justify-end justify-center  md:gap-4 gap-2">
-            <Button type="button" icon="pi pi-trash" label="Limpiar"
-              :pt="{ root: { class: 'my-custom-button-clients-no-background' } }" outlined @click="clearClientsFilter()"
-              v-tooltip.bottom="'Limpiar filtro'" />
-            <div class="flex justify-center">
-              <IconField>
+        <div class="grid grid-cols-8 md:gap-1 gap-4 w-full">
+            <div class="sm:col-start-1 sm:col-end-3 sm:justify-self-start sm:justify-start col-start-5 col-end-9 justify-self-center w-full flex justify-center text-xs">
+              <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-clients' } }"
+                @click="exportCSV($event)" v-tooltip.right="'Exportar tabla como CSV'" class="w-40 h-11"/>
+            </div>
+            <div class="lg:col-start-7 lg:col-end-7 md:col-start-4 md:col-end-6 sm:col-start-3 sm:col-end-5 sm:justify-self-start sm:order-none col-start-1 col-end-5 justify-self-start w-full flex justify-center text-xs -order-1">
+              <Button type="button" icon="pi pi-trash" label="Limpiar"
+                :pt="{ root: { class: 'my-custom-button-clients-no-background' } }" outlined @click="clearClientsFilter()"
+                v-tooltip.bottom="'Limpiar filtro'" class="w-30 h-11"/>
+            </div>
+            <div class="lg:col-start-8 lg:col-end-8 md:col-start-8 sm:col-start-5 sm:col-end-8 md:justify-self-end sm:justify-self-start col-start-2 justify-self-start">
+              <IconField >
                 <InputIcon>
                   <i class="pi pi-search" />
                 </InputIcon>
-                <InputText v-model="filters['global'].value"
-                  :pt="{ root: { class: 'my-custom-button-clients-no-background' } }" placeholder="Busqueda general" />
+                <InputText  v-model="filters['global'].value"
+                  :pt="{ root: { class: 'my-custom-button-clients-no-background' } }" placeholder="Busqueda general" class="h-11"/>
               </IconField>
             </div>
-          </div>
         </div>
       </template>
       <template #empty>
@@ -250,9 +253,9 @@ onMounted(async () => {
     </DataTable>
   </div>
 
-  <Dialog v-model:visible="visible" maximizable modal dismissableMask pt:root:class="!border-0 ">
+  <Dialog v-model:visible="visible" maximizable modal dismissableMask pt:root:class="!border-0">
     <template #container="{ closeCallback }">
-      <Card style="width: 28rem; overflow: hidden">
+      <Card class="md:w-[28rem] w-full" style="overflow: hidden">
         <template #title>
           <div class="flex flex-col w-full">
             <p>{{ detailedInfo.nombre }} {{ detailedInfo.apellido }}</p>
