@@ -36,6 +36,7 @@ import Dialog from 'primevue/dialog';
 import Skeleton from 'primevue/skeleton';
 import Ripple from 'primevue/ripple';
 import Popover from 'primevue/popover';
+import Divider from 'primevue/divider';
 import ProgressSpinner from 'primevue/progressspinner';
 import ProgressBar from 'primevue/progressbar';
 import Chart from 'primevue/chart';
@@ -329,6 +330,7 @@ app.component('Dialog', Dialog);
 app.component('Popover', Popover);
 app.component('ProgressSpinner', ProgressSpinner);
 app.component('ProgressBar', ProgressBar);
+app.component('Divider', Divider);
 /*app.component('ConfirmPopup', ConfirmPopup);*/
 //app.component('Fluid', Fluid);
 app.component('Skeleton', Skeleton);

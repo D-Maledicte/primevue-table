@@ -32,7 +32,12 @@ const secondaryFormatData = (data) => {
   secondaryRepresentatives.value = updateSecondaryRepresentatives(newData);
   return newData
 };
-
+const applyFilterMultiSelect = (field) => {
+  setTimeout(() => {
+    // Asegurarse de que la referencia existe antes de llamar a .hide()
+    MultiSelectReferences.value[field].hide(); // Oculta el popover después de un pequeño retraso
+  }, 100);
+};
 
 const filterByCotizacion = (id_cotizacion, data) => {
   const secondaryRows = toRaw(data);
@@ -95,6 +100,7 @@ const procesarSecondaryOperacion = (target) => {
 };
 const products = ref(new Array(1));
 const SecondaryTableRows = ref();
+const MultiSelectReferences = ref({});
 const secondaryColumns = [
   { field: 'aseguradora', header: 'Aseguradora' },
   { field: 'estado', header: 'Estado' },
@@ -234,7 +240,26 @@ onMounted(async () => {
         </div>
       </div>
     </template>
-    <template #empty> No hay registros que coincidan con la busqueda </template>
+    <template #empty>
+        <div class="flex flex-col justify-center content-center items-center w-full">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="140" height="140" fill="#8FA3AD">
+            <!-- Fondo -->
+            <rect x="8" y="12" width="48" height="40" rx="4" ry="4" fill="#DAE3E7" stroke="#8FA3AD" stroke-width="2" />
+            <!-- Cara triste -->
+            <circle cx="24" cy="30" r="2" fill="#8FA3AD" />
+            <circle cx="40" cy="30" r="2" fill="#8FA3AD" />
+            <path d="M28,38 C28,36 36,36 36,38" stroke="#8FA3AD" stroke-width="2" fill="none" />
+            <!-- Lupa -->
+            <circle cx="44" cy="44" r="10" stroke="#8FA3AD" stroke-width="2" fill="none" />
+            <line x1="50" y1="50" x2="60" y2="60" stroke="#8FA3AD" stroke-width="2" />
+            <!-- Papel doblado -->
+            <path d="M40 12 H48 V20" fill="#FFF" stroke="#8FA3AD" stroke-width="2" />
+          </svg>
+          <p class="font-normal text-gray-500">No hay registros que coincidan con la búsqueda</p>
+        </div>
+
+      </template>
     <template #loading> Cargando Información </template>
     <Column v-for="col of secondaryColumns" :sortable="col.field != 'aviso' && col.field != 'acciones' ? true : false"
       :key="col.id_pedido" :field="col.field" :header="col.header" v-bind="filters_distinction(col.field)">
@@ -297,7 +322,7 @@ onMounted(async () => {
         </div>
       </template>
       <template v-else-if="col.field != 'acciones'" #filter="{ filterModel }">
-        <MultiSelect v-model="filterModel.value" :options="secondaryRepresentatives[col.field]"
+        <MultiSelect v-model="filterModel.value" :ref="(el) => MultiSelectReferences[col.field] = el" :options="secondaryRepresentatives[col.field]"
           :selectedItemsLabel="'{0} opciones elegidas'" :maxSelectedLabels="2" class="w-60" placeholder="Todos">
           <template #option="slotProps">
             <template v-if="col.field == 'estado'">
@@ -311,6 +336,14 @@ onMounted(async () => {
               <span>{{ slotProps.option }}</span>
             </template>
           </template>
+          <template #footer>
+              <div class="flex items-end justify-end gap-6">
+                <Button icon="pi pi-trash" text rounded aria-label="Confirm" @click="filterModel.value = null"
+                  v-tooltip.bottom="'Borrar selección'"></Button>
+                <Button icon="pi pi-check-square" text rounded aria-label="Confirm"
+                  @click="applyFilterMultiSelect(col.field)" v-tooltip.bottom="'Confirmar selección'"></Button>
+              </div>
+            </template>
         </MultiSelect>
       </template>
     </Column>

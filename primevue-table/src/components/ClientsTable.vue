@@ -54,8 +54,8 @@ const initClientsFilters = () => {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     nombre: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
     apellido: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-    dni: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    telefono: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    dni: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    telefono: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     email: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
   };
 };
@@ -128,6 +128,11 @@ const sortIcons = computed(() => {
   }
 })
 
+const getClientsPlaceholder = (header) => {
+    console.log(header);
+    return header == 'DNI / Cuil' || header == 'Telefono' ? `${header} comienza en` : `Buscar por ${header}`;
+}
+
 const dt = ref();
 const exportCSV = () => {
   dt.value.exportCSV();
@@ -160,7 +165,7 @@ onMounted(async () => {
         <div class="flex md:flex-row flex-col md:justify-between justify-center md:gap-0 gap-4">
           <div class="flex flex-row gap-2 md:justify-normal justify-center md:m-0 mx-4">
             <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-clients' } }"
-              @click="exportCSV($event)" v-tooltip.bottom="'Exportar tabla como CSV'" />
+              @click="exportCSV($event)" v-tooltip.right="'Exportar tabla como CSV'" />
           </div>
           <div class="flex flex-row md:justify-end justify-center  md:gap-4 gap-2">
             <Button type="button" icon="pi pi-trash" label="Limpiar"
@@ -233,7 +238,7 @@ onMounted(async () => {
           <DatePicker v-model="filterModel.value" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy" />
         </template>
         <template v-else-if="col.field != 'acciones'" #filter="{ filterModel }">
-          <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
+          <InputText v-model="filterModel.value" type="text" :placeholder="getClientsPlaceholder(col.header)" />
         </template>
       </Column>
       <template #footer>

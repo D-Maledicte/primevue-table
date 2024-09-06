@@ -14,13 +14,6 @@ const props = defineProps({
 const mainTableDataStore = useMainTableDataStore();
 const MultiSelectReferences = ref({});
 /// Visual effects
-const screenMode = ref("pi pi-moon");
-const toggleColorScheme = () => {
-  const element = document.querySelector('html');
-  element.classList.toggle('my-app-dark');
-  screenMode.value = screenMode.value == "pi pi-sun" ? "pi pi-moon" : "pi pi-sun";
-  mainTableDataStore.darkMode == false ? mainTableDataStore.setdarkMode(true) : mainTableDataStore.setdarkMode(false);
-};
 const Loader = ref(true);
 const dialogState = ref();
 const dialogMaximize = (event) => {
@@ -275,8 +268,6 @@ onMounted(async () => {
       <template #header>
         <div class="flex md:flex-row flex-col md:justify-between justify-center md:gap-0 gap-4">
           <div class="flex flex-row gap-2 md:justify-normal justify-center md:m-0 mx-4">
-            <Button type="button" :icon="screenMode" :pt="{ root: { class: 'my-custom-button-main' } }"
-              @click="toggleColorScheme()" v-tooltip.right="'Alternar modo nocturno'" />
             <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.right="'Exportar tabla como CSV'"
               :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
           </div>

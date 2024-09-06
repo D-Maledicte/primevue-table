@@ -8,6 +8,18 @@ import { useMainTableDataStore } from '@/stores/mainTableData';
 import { fetchData, formatDateString } from "../components/services/formatFunctions.mjs"
 ///Main deploy segmentation
 const produ = false;
+
+//////////////////////////////////
+const screenMode = ref("pi pi-moon");
+const toggleColorScheme = () => {
+  const element = document.querySelector('html');
+  element.classList.toggle('my-app-dark');
+  screenMode.value = screenMode.value == "pi pi-sun" ? "pi pi-moon" : "pi pi-sun";
+  mainTableDataStore.darkMode == false ? mainTableDataStore.setdarkMode(true) : mainTableDataStore.setdarkMode(false);
+};
+const getTooltipNightMode = () => {
+  return screenMode.value == "pi pi-sun"? 'Modo nocturno' : "Modo Claro"
+}
 const Loader = ref(true);
 const formatData = (data) => {
   var newData = data.map(item => {
@@ -32,7 +44,7 @@ const kpisPanelState = computed(() => {
   return kpisPanelFlag.value ? 'pi pi-minus' : 'pi pi-plus';
 })
 const kpisPanelTooltip = computed(() => {
-  return MainTablePanelFlag.value ? 'Contraer' : 'Desplegar';
+  return kpisPanelFlag.value ? 'Contraer' : 'Desplegar';
 })
 const MainTablePanel = ref();
 const MainTablePanelFlag = ref(false);
@@ -58,7 +70,7 @@ const ClientsPanelState = computed(() => {
   return ClientsPanelFlag.value ? 'pi pi-minus' : 'pi pi-plus';
 })
 const ClientsPanelTooltip = computed(() => {
-  return MainTablePanelFlag.value ? 'Contraer' : 'Desplegar';
+  return ClientsPanelFlag.value ? 'Contraer' : 'Desplegar';
 })
 
 onMounted(async () => {
@@ -76,7 +88,17 @@ onMounted(async () => {
 
 <template>
   <main class="main_selector">
-    <div class="flex mt-6 card w-full justify-center">
+    <div class="flex w-full justify-between align-center p-2">
+      <Button type="button" :icon="screenMode" class="w-14" :pt="{ root: { class: 'my-custom-button-home' } }"
+              @click="toggleColorScheme()" v-tooltip.right="getTooltipNightMode()" />
+              <svg width="200" height="50" xmlns="http://www.w3.org/2000/svg">
+  <text x="10" y="35" font-family="Roboto" font-size="32" fill="#333">
+    NATALIA
+  </text>
+</svg>
+    </div>
+    <Divider :pt="{ root: { class: 'my-custom-divider-home' } }"></Divider>
+    <div class="flex card w-full justify-center">
       <div class="flex flex-col gap-20 md:p-8 w-full min-h-[30rem] justify-center">
         <template v-if="Loader">
           <div class="flex w-full justify-center">
@@ -88,7 +110,7 @@ onMounted(async () => {
             <template #header>
               <div class="flex justify-center align-center items-center gap-2">
                 <Button :icon="kpisPanelState" rounded text @click="kpisToggle(event)"
-                  v-tooltip.right="kpisPanelTooltip" />
+                  v-tooltip.bottom="kpisPanelTooltip" />
                 <span class="font-bold">Modelo: KPI´s (en construcción)</span>
               </div>
             </template>
@@ -101,7 +123,7 @@ onMounted(async () => {
             <template #header>
               <div class="flex justify-center align-center items-center gap-2">
                 <Button :icon="MainTablePanelState" rounded text @click="mainTablePanelToggle(event)"
-                  v-tooltip.right="MainTablePanelTooltip" />
+                  v-tooltip.bottom="MainTablePanelTooltip" />
                 <span class="font-bold">Modelo: Tabla anidada</span>
               </div>
             </template>
@@ -113,7 +135,7 @@ onMounted(async () => {
             <template #header>
               <div class="flex justify-center align-center items-center gap-2">
                 <Button :icon="ClientsPanelState" rounded text @click="clientsPanelToggle(event)"
-                  v-tooltip.right="ClientsPanelTooltip" />
+                  v-tooltip.bottom="ClientsPanelTooltip" />
                 <span class="font-bold">Modelo: Tabla de clientes</span>
               </div>
             </template>
@@ -129,4 +151,18 @@ onMounted(async () => {
 
 </template>
 
-<style scoped></style>
+<style scoped>
+.my-custom-button-home {
+  background-color: #1e40af !important;
+  /* Green background */
+  border: 1px solid #1e40af !important;
+  /* Tomato border */
+  color: #e2e8f0 !important;
+  /* White text */
+  width: 3rem;
+  height: 3rem; 
+}
+.my-custom-divider-home {
+  margin: 0;
+}
+</style>

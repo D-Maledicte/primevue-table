@@ -176,7 +176,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="w-full grid md:grid-cols-2 grid-cols-1 gap-4 justify-center">
-        <Panel class="flex flex-col justify-center" :pt="{ root: { class: 'panel-component' } }">
+        <Panel class="flex flex-col justify-center" :pt="{ root: { class: mainTableDataStore.darkMode == false? 'panel-component-light' : 'panel-component-dark' } }">
             <template #header>
                 <div class="flex flex-col w-full">
                     <h2 class="font-semibold text-left">Cotizaciones por riesgos</h2>
@@ -194,7 +194,7 @@ onMounted(() => {
                 </div>
             </div>
         </Panel>
-        <Panel class="flex flex-col justify-center" :pt="{ root: { class: 'panel-component' } }">
+        <Panel class="flex flex-col justify-center" :pt="{ root: { class: mainTableDataStore.darkMode == false? 'panel-component-light' : 'panel-component-dark' } }">
             <template #header>
                 <div class="flex flex-col w-full">
                     <h2 class="font-semibold text-left">Cerrados ganados y perdidos por fecha de creación</h2>
@@ -212,7 +212,7 @@ onMounted(() => {
                 </div>
             </div>
         </Panel>
-        <Panel class="flex flex-col justify-center" :pt="{ root: { class: 'panel-component' } }">
+        <Panel class="flex flex-col justify-center" :pt="{ root: { class: mainTableDataStore.darkMode == false? 'panel-component-light' : 'panel-component-dark' } }">
             <template #header>
                 <div class="flex flex-col w-full">
                     <h2 class="font-semibold text-left">Prima por riesgo</h2>
@@ -230,7 +230,7 @@ onMounted(() => {
                 </div>
             </div>
         </Panel>
-        <Panel class="flex flex-col justify-center" :pt="{ root: { class: 'panel-component' } }">
+        <Panel class="flex flex-col justify-center" :pt="{ root: { class: mainTableDataStore.darkMode == false? 'panel-component-light' : 'panel-component-dark' } }">
             <template #header>
                 <div class="flex flex-col w-full">
                     <h2 class="font-semibold text-left">Creados vs Ganados por fecha de creación</h2>
@@ -250,8 +250,11 @@ onMounted(() => {
         </Panel>
     </div>
 </template>
-<style>
-.panel-component {
+<style scoped>
+.panel-component-light {
     background-color: var(--p-gray-100);
+}
+.panel-component-dark {
+    background-color: var(--p-blue-900);
 }
 </style>
