@@ -277,11 +277,11 @@ onBeforeUnmount(() => {
     </DataTable>
   </div>
 
-  <Dialog v-model:visible="visible" maximizable modal dismissableMask pt:root:class="!border-0">
-    <template #container="{ closeCallback }">
+  <Dialog v-model:visible="visible" maximizable modal dismissableMask pt:root:class="!border-0" :breakpoints="{ '1199px': '75vw', '575px': '100vw' }">
+    <template #container="{ closeCallback, maximizeCallback }">
       <Card class="md:w-[28rem] w-full" style="overflow: hidden">
         <template #title>
-          <div class="flex flex-col w-full px-4 py-1">
+          <div class="flex flex-col w-full px-4 pb-1 ">
             <p>{{ detailedInfo.nombre }} {{ detailedInfo.apellido }}</p>
           </div>
 
@@ -298,7 +298,7 @@ onBeforeUnmount(() => {
         </template>
         <template #content>
           <div class="flex flex-col content-center items-center w-full">
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
+            <div class="grid grid-cols-2 px-2 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 font-normal text-left">
                 Provincia:
               </p>
@@ -306,7 +306,7 @@ onBeforeUnmount(() => {
                 {{ detailedInfo.provincia }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
+            <div class="grid grid-cols-2 px-2 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left">
                 Localidad:
               </p>
@@ -314,7 +314,7 @@ onBeforeUnmount(() => {
                 {{ detailedInfo.localidad }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
+            <div class="grid grid-cols-2 px-2 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left">
                 Calle:
               </p>
@@ -322,7 +322,7 @@ onBeforeUnmount(() => {
                 {{ detailedInfo.calle }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
+            <div class="grid grid-cols-2 px-2 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left">
                 Numero de calle:
               </p>
@@ -330,7 +330,7 @@ onBeforeUnmount(() => {
                 {{ detailedInfo.nroCalle }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
+            <div class="grid grid-cols-2 px-2 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left text-nowrap">
                 Grupo Económico:
               </p>
@@ -338,7 +338,7 @@ onBeforeUnmount(() => {
                 {{ detailedInfo.grupoEconomico }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
+            <div class="grid grid-cols-2 px-2 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left text-nowrap">
                 Fecha de nacimiento:
               </p>
@@ -352,7 +352,7 @@ onBeforeUnmount(() => {
         </template>
         <template #footer>
           <div class="flex gap-4 mt-1 justify-center">
-            <Button label="Editar" class="w-40 h-9" v-tooltip.bottom="'Editar información'" />
+            <Button label="Editar" class="w-40 h-9" v-tooltip.bottom="'Editar información'" @click="maximizeCallback()" />
             <Button label="Cerrar" severity="secondary" outlined class="w-40 h-9" @click="closeCallback()"
               v-tooltip.bottom="'Cerrar vista detallada'" />
           </div>
