@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, toRaw, computed } from 'vue';
+import { ref, onMounted, watch, toRaw, computed, onBeforeUnmount } from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
 import { fetchData, formatDateString, formatDateForDisplay, filters_distinction_clients, areObjectsEqual } from "./services/formatFunctions.mjs";
 const props = defineProps({
@@ -132,15 +132,14 @@ const getClientsPlaceholder = (header) => {
     console.log(header);
     return header == 'DNI / Cuil' || header == 'Telefono' ? `${header} comienza en` : `Buscar por ${header}`;
 }
-const getClearFilterLabel = () => {
-  const screenWidth = ref(window.innerWidth);
-  return screenWidth.value < 700 ? '' : 'Limpiar';
-}
 const dt = ref();
 const exportCSV = () => {
   dt.value.exportCSV();
 };
-
+const showLabel = ref(false);
+const checkWindowSize = () => {
+  showLabel.value = window.innerWidth >= 768; // Mostrar el label solo si el ancho es mayor o igual a 768px (md)
+};
 onMounted(async () => {
   if (props.produ) {
     ClientsTableRows.value = await fetchData("http://localhost:3000/api/clientsTable/");
@@ -156,16 +155,14 @@ onMounted(async () => {
     animateNumber(); // Ajusta el tiempo según sea necesario
   }, 1000);
   initialized.value = true;
+  checkWindowSize(); // Ejecutar en montaje para inicializar
+  window.addEventListener('resize', checkWindowSize); // Escuchar cambios de tamaño de pantalla
 });
-</script>
-<template>
-  <div class="lg:p-8 w-full flex justify-center">
-    <DataTable v-model:filters="filters" :globalFilterFields="['nombre', 'apellido', 'dni', 'telefono', 'email']"
-      filterDisplay="menu" :value="products" @filter="onFilter" class="w-11/12" ref="dt" stripedRows paginator
-      :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" scrollable scrollHeight="590px" stateStorage="session"
-      stateKey="dt-state-client-session">
-      <template #header>
-        <div class="grid grid-cols-8 md:gap-1 gap-4 w-full">
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkWindowSize); // Limpiar el listener en caso de desmontar
+});
+/*
+<div class="grid grid-cols-8 md:gap-1 gap-4 w-full">
             <div class="sm:col-start-1 sm:col-end-3 sm:justify-self-start sm:justify-start col-start-5 col-end-9 justify-self-center w-full flex justify-center text-xs">
               <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-clients' } }"
                 @click="exportCSV($event)" v-tooltip.right="'Exportar tabla como CSV'" class="w-40 h-11"/>
@@ -176,6 +173,33 @@ onMounted(async () => {
                 v-tooltip.bottom="'Limpiar filtro'" class="w-30 h-11"/>
             </div>
             <div class="lg:col-start-8 lg:col-end-8 md:col-start-8 sm:col-start-5 sm:col-end-8 md:justify-self-end sm:justify-self-start col-start-2 justify-self-start">
+              <IconField >
+                <InputIcon>
+                  <i class="pi pi-search" />
+                </InputIcon>
+                <InputText  v-model="filters['global'].value"
+                  :pt="{ root: { class: 'my-custom-button-clients-no-background' } }" placeholder="Busqueda general" class="h-11"/>
+              </IconField>
+            </div>
+        </div>
+*/
+</script>
+<template>
+  <div class="lg:p-8 w-full flex justify-center">
+    <DataTable v-model:filters="filters" :globalFilterFields="['nombre', 'apellido', 'dni', 'telefono', 'email']"
+      filterDisplay="menu" :value="products" @filter="onFilter" class="w-11/12" ref="dt" stripedRows paginator
+      :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" scrollable scrollHeight="590px" stateStorage="session"
+      stateKey="dt-state-client-session">
+      <template #header>
+        <div class="grid grid-cols-8 gap-2 md:gap-2 w-full">
+            <div class="xl:col-span-2 lg:col-span-3 md:col-span-5 sm:col-span-2 col-span-8 flex sm:gap-2 gap-4 md:justify-start justify-center">
+              <Button icon="pi pi-file-excel" :label="showLabel ? 'Exportar a CSV' : ''" :pt="{ root: { class: 'my-custom-button-clients' } }"
+                @click="exportCSV($event)" v-tooltip.right="'Exportar tabla como CSV'" class="w-40 h-11"/>
+              <Button type="button" icon="pi pi-trash" :label="showLabel ? 'Limpiar' : ''"
+                :pt="{ root: { class: 'my-custom-button-clients-no-background' } }" outlined @click="clearClientsFilter()"
+                v-tooltip.bottom="'Limpiar filtro'" class="w-30 h-11"/>
+            </div>
+            <div class="lg:col-start-7 lg:col-span-2 md:col-start-6 md:col-span-3 md:justify-self-end sm:col-start-6 sm:col-span-3 col-span-8 justify-self-center flex justify-center lg:justify-end">
               <IconField >
                 <InputIcon>
                   <i class="pi pi-search" />
@@ -257,7 +281,7 @@ onMounted(async () => {
     <template #container="{ closeCallback }">
       <Card class="md:w-[28rem] w-full" style="overflow: hidden">
         <template #title>
-          <div class="flex flex-col w-full">
+          <div class="flex flex-col w-full px-4 py-1">
             <p>{{ detailedInfo.nombre }} {{ detailedInfo.apellido }}</p>
           </div>
 
@@ -274,15 +298,15 @@ onMounted(async () => {
         </template>
         <template #content>
           <div class="flex flex-col content-center items-center w-full">
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 font-normal text-left">
                 Provincia:
               </p>
-              <p class="font-medium text-right">
+              <p class="font-medium text-right ">
                 {{ detailedInfo.provincia }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left">
                 Localidad:
               </p>
@@ -290,7 +314,7 @@ onMounted(async () => {
                 {{ detailedInfo.localidad }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left">
                 Calle:
               </p>
@@ -298,7 +322,7 @@ onMounted(async () => {
                 {{ detailedInfo.calle }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left">
                 Numero de calle:
               </p>
@@ -306,7 +330,7 @@ onMounted(async () => {
                 {{ detailedInfo.nroCalle }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left text-nowrap">
                 Grupo Económico:
               </p>
@@ -314,7 +338,7 @@ onMounted(async () => {
                 {{ detailedInfo.grupoEconomico }}
               </p>
             </div>
-            <div class="grid grid-cols-2 px-2 py-1 w-11/12">
+            <div class="grid grid-cols-2 px-2 py-1 w-11/12 xl:text-base text-sm">
               <p class="text-gray-500 text-left text-nowrap">
                 Fecha de nacimiento:
               </p>
@@ -327,9 +351,9 @@ onMounted(async () => {
 
         </template>
         <template #footer>
-          <div class="flex gap-4 mt-1">
-            <Button label="Editar" class="w-8/12" v-tooltip.bottom="'Editar información'" />
-            <Button label="Cerrar" severity="secondary" outlined class="w-8/12" @click="closeCallback()"
+          <div class="flex gap-4 mt-1 justify-center">
+            <Button label="Editar" class="w-40 h-9" v-tooltip.bottom="'Editar información'" />
+            <Button label="Cerrar" severity="secondary" outlined class="w-40 h-9" @click="closeCallback()"
               v-tooltip.bottom="'Cerrar vista detallada'" />
           </div>
         </template>

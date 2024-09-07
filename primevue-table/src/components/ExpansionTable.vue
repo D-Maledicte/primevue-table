@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, toRaw, computed } from 'vue';
+import { ref, onMounted, watch, toRaw, computed, onBeforeUnmount } from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
 import { fetchData, formatDateString, formatDateForDisplay, filters_distinction, getSeveritySecondary, areObjectsEqual } from "./services/formatFunctions.mjs";
 const props = defineProps({
@@ -194,6 +194,10 @@ const exportCSV = () => {
   dt.value.exportCSV();
 };
 
+const showLabel = ref(false);
+const checkWindowSize = () => {
+  showLabel.value = window.innerWidth >= 1024; // Mostrar el label solo si el ancho es mayor o igual a 768px (md)
+};
 onMounted(async () => {
   if (props.produ) {
     SecondaryTableRows.value = await fetchData("http://localhost:3000/api/secondaryTable/" + props.id_record);
@@ -210,15 +214,14 @@ onMounted(async () => {
     animateNumber(); // Ajusta el tiempo según sea necesario
   }, 1000);
   initialized.value = true;
+  checkWindowSize(); // Ejecutar en montaje para inicializar
+  window.addEventListener('resize', checkWindowSize); // Escuchar cambios de tamaño de pantalla
 });
-</script>
-
-<template>
-  <DataTable v-model:filters="filters" :globalFilterFields="['estado', 'aseguradora']" filterDisplay="menu"
-    :value="products" @filter="onFilter" tableStyle="min-width: 50rem" ref="dt" stripedRows paginator :rows="5"
-    :rowsPerPageOptions="[5, 10, 20, 50]">
-    <template #header>
-      <div class="flex md:flex-row lg:justify-between lg:gap-4 gap-2 w-full">
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkWindowSize); // Limpiar el listener en caso de desmontar
+});
+/*
+<div class="flex md:flex-row lg:justify-between lg:gap-4 gap-2 w-full">
         <div class="flex flex-row md:justify-end justify-center md:gap-4 gap-2">
           <div class="flex justify-center">
             <IconField>
@@ -237,6 +240,32 @@ onMounted(async () => {
         <div class="flex flex-row gap-2 md:justify-normal justify-center md:m-0 mx-4">
           <Button icon="pi pi-file-excel" label="Exportar a CSV" :pt="{ root: { class: 'my-custom-button-secondary' } }"
             @click="exportCSV($event)" v-tooltip.bottom="'Exportar tabla como CSV'" />
+        </div>
+      </div>
+*/
+</script>
+
+<template>
+  <DataTable v-model:filters="filters" :globalFilterFields="['estado', 'aseguradora']" filterDisplay="menu"
+    :value="products" @filter="onFilter" tableStyle="min-width: 50rem" ref="dt" stripedRows paginator :rows="5"
+    :rowsPerPageOptions="[5, 10, 20, 50]">
+    <template #header>
+      <div class="grid grid-cols-8 gap-2 md:gap-2 w-full">
+        <div class="col-start-1 justify-self-center sm:justify-self-start lg:col-span-2 md:col-span-3 sm:col-span-3 col-span-2 flex justify-center lg:justify-start">
+            <IconField>
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText v-model="filters['global'].value"
+                :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" placeholder="Busqueda general" />
+            </IconField>
+        </div>
+        <div class="col-start-1 justify-self-center xl:justify-self-end sm:justify-self-start 2xl:col-start-7 xl:col-start-6 lg:col-start-5 md:col-start-4 sm:col-start-4 lg:col-span-2 md:col-span-1 sm:col-span-1 col-span-2 sm:gap-2 gap-4 sm:order-none -order-1 flex md:justify-end justify-center">
+          <Button icon="pi pi-file-excel" :label="showLabel ? 'Exportar a CSV' : ''" :pt="{ root: { class: 'my-custom-button-secondary' } }"
+            @click="exportCSV($event)" v-tooltip.bottom="'Exportar tabla como CSV'" />
+          <Button type="button" icon="pi pi-trash" :label="showLabel ? 'Limpiar' : ''"
+            :pt="{ root: { class: 'my-custom-button-secondary-no-background' } }" outlined
+            @click="clearSecondaryFilter()" v-tooltip.bottom="'Limpiar filtro'" />
         </div>
       </div>
     </template>
@@ -292,7 +321,7 @@ onMounted(async () => {
           </template>
           <template v-else-if="col.field == 'estado'">
             <div class="flex justify-center align-center w-full h-4/5">
-              <Tag :value="data[col.field]" class="w-8/12 h-1/5 text-nowrap"
+              <Tag :value="data[col.field]" class="2xl:w-8/12 w-full h-1/5 text-nowrap"
                 v-bind="getSeveritySecondary(data[col.field]) == null ? { class: 'severity-null' } : { severity: getSeveritySecondary(data[col.field]) }">
               </Tag>
             </div>

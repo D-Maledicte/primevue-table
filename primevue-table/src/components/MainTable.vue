@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, toRaw, computed } from 'vue';
+import { ref, onMounted, watch, toRaw, computed, onBeforeUnmount } from 'vue';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
 import { formatDateForDisplay, formatCurrency, filters_distinction, getSeverityMain, getPrimaAseguradaNonCurrency, areObjectsEqual } from "../components/services/formatFunctions.mjs"
 import { useMainTableDataStore } from '@/stores/mainTableData';
@@ -245,6 +245,11 @@ const onExpandRow = (id) => {
   }
   expandedRows.value = { ...expandedRows.value }; // Esto asegura la reactividad
 };
+
+const showLabel = ref(false);
+const checkWindowSize = () => {
+  showLabel.value = window.innerWidth >= 768; // Mostrar el label solo si el ancho es mayor o igual a 768px (md)
+};
 /// Starting functions
 onMounted(async () => {
   setTimeout(() => {
@@ -256,8 +261,33 @@ onMounted(async () => {
     animateCurrency()
   }, 1000);
   initialized.value = true;
+  checkWindowSize(); // Ejecutar en montaje para inicializar
+  window.addEventListener('resize', checkWindowSize); // Escuchar cambios de tamaño de pantalla
 });
-
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkWindowSize); // Limpiar el listener en caso de desmontar
+});
+/*
+<div class="grid grid-cols-8 md:gap-1 gap-4 w-full">
+          <div class="sm:col-start-1 sm:col-end-3 sm:justify-self-start sm:justify-start col-start-5 col-end-9 justify-self-center w-full flex justify-center text-xs">
+            <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.right="'Exportar tabla como CSV'"
+              :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" class="w-40 h-11"/>
+          </div>
+          <div class="2xl:col-start-7 2xl:col-end-7 xl:col-start-6 xl:col-end-6 lg:col-start-5 lg:col-end-5 md:col-start-4 md:col-end-6 sm:col-start-3 sm:col-end-5 sm:justify-self-start sm:order-none col-start-1 col-end-5 justify-self-start w-full flex justify-center text-xs -order-1">
+            <Button type="button" icon="pi pi-trash" label="Limpiar" v-tooltip.bottom="'Limpiar filtro'"
+              :pt="{ root: { class: 'my-custom-button-main-no-background' } }" outlined @click="clearFilter()" class="w-30 h-11"/>
+            
+          </div>
+          <div class="2xl:col-start-8 2xl:col-end-8 xl:col-start-8 xl:col-end-8 lg:col-start-8 lg:col-end-8 md:col-start-8 sm:col-start-5 sm:col-end-8 md:justify-self-end sm:justify-self-start col-start-2 justify-self-start">
+              <IconField>
+                <InputIcon>
+                  <i class="pi pi-search" />
+                </InputIcon>
+                <InputText v-model="localFilterValue" placeholder="Busqueda general" class="h-11" />
+              </IconField>
+            </div>
+        </div>
+*/
 </script>
 <template>
   <div class="w-full flex justify-center">
@@ -266,22 +296,26 @@ onMounted(async () => {
       size="small" class="w-11/12" ref="dt" :expandedRows="expandedRows" @filter="onFilter" scrollable
       scrollHeight="590px" dataKey="id_cotizacion" stateStorage="session" stateKey="dt-state-mainTable-session">
       <template #header>
-        <div class="flex md:flex-row flex-col md:justify-between justify-center md:gap-0 gap-4">
-          <div class="flex flex-row gap-2 md:justify-normal justify-center md:m-0 mx-4">
-            <Button icon="pi pi-file-excel" label="Exportar a CSV" v-tooltip.right="'Exportar tabla como CSV'"
-              :pt="{ root: { class: 'my-custom-button-main' } }" @click="exportCSV($event)" />
+        <div class="grid grid-cols-8 gap-2 md:gap-2 w-full">
+          <!-- Primera fila: Exportar a CSV y Limpiar en pantallas pequeñas y medianas -->
+          <div
+            class="xl:col-span-2 lg:col-span-3 md:col-span-5 sm:col-span-2 col-span-8 flex sm:gap-2 gap-4 md:justify-start justify-center">
+            <Button icon="pi pi-file-excel" :label="showLabel ? 'Exportar a CSV' : ''"
+              v-tooltip.right="'Exportar tabla como CSV'" :pt="{ root: { class: 'my-custom-button-main' } }"
+              @click="exportCSV($event)" class="md:w-40 w-full h-11" />
+            <Button type="button" icon="pi pi-trash" :label="showLabel ? 'Limpiar' : ''"
+              v-tooltip.bottom="'Limpiar filtro'" :pt="{ root: { class: 'my-custom-button-main-no-background' } }"
+              outlined @click="clearFilter()" class="md:w-24 w-full h-11" />
           </div>
-          <div class="flex flex-row md:justify-end justify-center  md:gap-4 gap-2">
-            <Button type="button" icon="pi pi-trash" label="Limpiar" v-tooltip.bottom="'Limpiar filtro'"
-              :pt="{ root: { class: 'my-custom-button-main-no-background' } }" outlined @click="clearFilter()" />
-            <div class="flex justify-center">
-              <IconField>
-                <InputIcon>
-                  <i class="pi pi-search" />
-                </InputIcon>
-                <InputText v-model="localFilterValue" placeholder="Busqueda general" />
-              </IconField>
-            </div>
+          <!-- Input de Búsqueda General (se pone en la segunda fila en pantallas pequeñas) -->
+          <div
+            class="lg:col-start-7 lg:col-span-2 md:col-start-6 md:col-span-3 md:justify-self-end sm:col-start-6 sm:col-span-3 col-span-8 justify-self-center flex justify-center lg:justify-end">
+            <IconField>
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText v-model="localFilterValue" placeholder="Busqueda general" class="h-11 w-full lg:w-64" />
+            </IconField>
           </div>
         </div>
 
