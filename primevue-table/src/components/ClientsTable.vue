@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
     </DataTable>
   </div>
 
-  <Dialog v-model:visible="visible" maximizable modal dismissableMask pt:root:class="!border-0" :breakpoints="{ '1199px': '75vw', '575px': '100vw' }">
+  <Dialog v-model:visible="visible" maximizable modal dismissableMask pt:root:class="!border-0">
     <template #container="{ closeCallback, maximizeCallback }">
       <Card class="md:w-[28rem] w-full" style="overflow: hidden">
         <template #title>
