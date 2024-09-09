@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, toRaw, computed } from 'vue';
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 //import { useConfirm } from "primevue/useconfirm";
 import { fetchData, formatDateForDisplay, formatDateString, getSeverityLogs } from "./services/formatFunctions.mjs";
 const props = defineProps({
@@ -20,10 +20,6 @@ const maximizeCallbackDialog = () => {
   emit('maximizeCallbackDialog'); // Emitimos el evento con los datos que queremos pasar al padre
   maximizeStatus.value = maximizeStatus.value == "Maximizar" ? "Minimizar" : "Maximizar";
 };
-const screenWidth = ref(window.innerWidth);
-const maximizeIconShow = computed(() => {
-  screenWidth < 1080 ? false : true;
-})
 //const confirm = useConfirm();
 const popover = ref();
 const multiselect = ref();
@@ -180,6 +176,10 @@ const showTemplate = (event) => {
     });
 }
 */
+const maximizeIconShow = ref(false);
+const checkWindowSize = () => {
+  maximizeIconShow.value = window.innerWidth > 1080; // Mostrar el label solo si el ancho es mayor o igual a 768px (md)
+};
 onMounted(async () => {
   if (props.produ) {
     InfoTableRows.value = await fetchData("http://localhost:3000/api/infoTable/" + props.id_record);
@@ -192,6 +192,11 @@ onMounted(async () => {
     products.value = InfoTableRows.value;
     Loader.value = false;
   }, 1000);
+  checkWindowSize(); // Ejecutar en montaje para inicializar
+  window.addEventListener('resize', checkWindowSize); // Escuchar cambios de tamaño de pantalla
+});
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkWindowSize); // Limpiar el listener en caso de desmontar
 });
 </script>
 <template>
