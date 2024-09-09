@@ -166,4 +166,18 @@ onMounted(async () => {
 .my-custom-divider-home {
   margin: 0;
 }
+
+/* Estilos para navegadores basados en WebKit/Blink (Chrome, Brave, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888 !important;
+  border-radius: 10px !important;
+}
 </style>
