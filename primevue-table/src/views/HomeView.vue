@@ -89,7 +89,7 @@ onMounted(async () => {
 
 <template>
   <main class="main_selector">
-    <div class="flex w-full justify-between align-center md:px-8 md:py-4">
+    <div class="flex w-full justify-between align-center md:px-8 md:py-4 px-2 py-1">
       <Button type="button" :icon="screenMode" class="w-14" :pt="{ root: { class: 'my-custom-button-home' } }"
               @click="toggleColorScheme()" v-tooltip.right="getTooltipNightMode()" />
               <svg width="200" height="50" xmlns="http://www.w3.org/2000/svg">
