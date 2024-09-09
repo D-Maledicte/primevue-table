@@ -84,6 +84,7 @@ onMounted(async () => {
   mainTableDataStore.setInitialized(true);
   Loader.value = false;
 });
+/*@click="kpisToggle(event)" */
 </script>
 
 <template>
@@ -109,7 +110,7 @@ onMounted(async () => {
           <Panel collapsed class="w-full" ref="kpisPanel">
             <template #header>
               <div class="flex justify-center align-center items-center gap-2">
-                <Button :icon="kpisPanelState" rounded text @click="kpisToggle(event)"
+                <Button :icon="kpisPanelState" rounded text
                   v-tooltip.bottom="kpisPanelTooltip" />
                 <span class="font-bold">Modelo: KPI´s (en construcción)</span>
               </div>

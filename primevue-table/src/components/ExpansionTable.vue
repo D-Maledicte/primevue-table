@@ -67,7 +67,9 @@ const initSecondaryFilters = () => {
 
 const clearSecondaryFilter = () => {
   initSecondaryFilters();
-  localFilterValue.value = null
+  localFilterValue.value = null;
+  dt.value.d_sortField = null;
+  dt.value.d_sortOrder = null;
 };
 initSecondaryFilters();
 const debounce = (func, wait) => {

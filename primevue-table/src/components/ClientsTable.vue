@@ -200,12 +200,12 @@ onBeforeUnmount(() => {
                 v-tooltip.bottom="'Limpiar filtro'" class="w-30 h-11"/>
             </div>
             <div class="lg:col-start-7 lg:col-span-2 md:col-start-6 md:col-span-3 md:justify-self-end sm:col-start-6 sm:col-span-3 col-span-8 justify-self-center flex justify-center lg:justify-end">
-              <IconField >
+              <IconField>
                 <InputIcon>
                   <i class="pi pi-search" />
                 </InputIcon>
                 <InputText  v-model="filters['global'].value"
-                  :pt="{ root: { class: 'my-custom-button-clients-no-background' } }" placeholder="Busqueda general" class="h-11"/>
+                  :pt="{ root: { class: 'my-custom-button-clients-no-background' } }" placeholder="Busqueda general" class="w-full h-11"/>             
               </IconField>
             </div>
         </div>
@@ -352,7 +352,7 @@ onBeforeUnmount(() => {
         </template>
         <template #footer>
           <div class="flex gap-4 mt-1 justify-center">
-            <Button label="Editar" class="w-40 h-9" v-tooltip.bottom="'Editar información'" @click="maximizeCallback()" />
+            <Button label="Editar" class="w-40 h-9" v-tooltip.bottom="'Editar información'" />
             <Button label="Cerrar" severity="secondary" outlined class="w-40 h-9" @click="closeCallback()"
               v-tooltip.bottom="'Cerrar vista detallada'" />
           </div>
