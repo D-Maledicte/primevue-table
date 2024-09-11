@@ -407,7 +407,7 @@ onBeforeUnmount(() => {
         <template v-if="col.field == 'titulo'" #filter="{ filterModel }">
           <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
         </template>
-        <template v-if="col.field == 'tomador'" #filter="{ filterModel }">
+        <template v-else-if="col.field == 'tomador'" #filter="{ filterModel }">
           <InputText v-model="filterModel.value" type="text" :placeholder="`Buscar por ${col.header}`" />
         </template>
         <template v-else-if="(col.field).includes('fecha')" #filter="{ filterModel }">
