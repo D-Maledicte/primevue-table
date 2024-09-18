@@ -73,9 +73,21 @@ const ClientsPanelTooltip = computed(() => {
   return ClientsPanelFlag.value ? 'Contraer' : 'Desplegar';
 })
 
+const filterByAseguradora = async (aseguradoras) => {
+  if (produ) {
+    const aseguradorasQueryParam = aseguradoras != null ? `?aseguradoraParam=${aseguradoras.join(',')}` : '';
+    MainTableRows.value = await fetchData("http://localhost:3000/api/mainTable/" + aseguradorasQueryParam);
+    console.log(MainTableRows.value);
+  } else {
+    const { mainTable } = await import('@/assets/dataset.mjs');
+    MainTableRows.value = mainTable;
+  }
+  mainTableDataStore.setMainTableDataArray(formatData(MainTableRows.value));
+}
+
 onMounted(async () => {
   if (produ) {
-    MainTableRows.value = await fetchData("http://localhost:3000/api/mainTable/");
+    MainTableRows.value = await fetchData("http://localhost:3000/api/mainTable2/");
   } else {
     const { mainTable } = await import('@/assets/dataset.mjs');
     MainTableRows.value = mainTable;
@@ -84,7 +96,7 @@ onMounted(async () => {
   mainTableDataStore.setInitialized(true);
   Loader.value = false;
 });
-/*@click="kpisToggle(event)" */
+/**/
 </script>
 
 <template>
@@ -111,7 +123,7 @@ onMounted(async () => {
             <template #header>
               <div class="flex justify-center align-center items-center gap-2">
                 <Button :icon="kpisPanelState" rounded text
-                  v-tooltip.bottom="kpisPanelTooltip" />
+                  v-tooltip.bottom="kpisPanelTooltip" @click="kpisToggle(event)"/>
                 <span class="font-bold">Modelo: KPI´s (en construcción)</span>
               </div>
             </template>
@@ -129,7 +141,7 @@ onMounted(async () => {
               </div>
             </template>
             <template v-if="MainTablePanelFlag && mainTableDataStore.initialized">
-              <MainTable :produ="produ"></MainTable>
+              <MainTable :produ="produ" @filterByAseguradora="filterByAseguradora"></MainTable>
             </template>
           </Panel>
           <Panel collapsed class="w-full" ref="ClientsPanel">

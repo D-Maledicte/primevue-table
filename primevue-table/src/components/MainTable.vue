@@ -11,6 +11,52 @@ const props = defineProps({
     required: true
   }
 });
+
+const emit = defineEmits(['filterByAseguradora']);
+const emitfilterByAseguradora = (data) => {
+  emit('filterByAseguradora', data); // Emitimos el evento con los datos que queremos pasar al padre
+  setTimeout(() => {
+    products.value = mainTableDataStore.mainTableDataArray;
+  }, 100);
+};
+const aseguradoras = ref();
+const listadoAseguradoras = [
+      'Afianzadora',
+      'Alba',
+      'Allianz',
+      'Asociart',
+      'Berkley',
+      'Boston',
+      'Chubb',
+      'Credito y Caucion',
+      'Cruz Suiza',
+      'Experta ART',
+      'Federacion Patronal',
+      'Fianzas y Credito',
+      'FOMS',
+      'Galeno',
+      'Gestion',
+      'Integrity',
+      'La Holando',
+      'La Segunda',
+      'Libra',
+      'Mapfre',
+      'Mercantil Andina',
+      'Meridional',
+      'Nacion Seguros',
+      'Omint',
+      'Origenes',
+      'Parana',
+      'Premiar',
+      'Provincia',
+      'San Cristobal',
+      'San Patricio',
+      'Sancor',
+      'SMG',
+      'Sura',
+      'TPC',
+      'Tu Seguro de Viaje'
+    ];
 const mainTableDataStore = useMainTableDataStore();
 const MultiSelectReferences = ref({});
 /// Visual effects
@@ -121,7 +167,7 @@ const mainColumns = [
   { field: 'fecha_cierre', header: 'Cierre estimado' },
   { field: 'acciones', header: 'Acciones' }
 ];
-const representatives = ref();
+const representatives = ref([]);
 
 const updateRepresentatives = (data) => {
   const newRepresentatives = {
@@ -287,6 +333,20 @@ onBeforeUnmount(() => {
               </IconField>
             </div>
         </div>
+*/
+
+/*
+<MultiSelect v-model="aseguradoras" :options="listadoAseguradoras" :selectedItemsLabel="'{0} opciones elegidas'" :maxSelectedLabels="2"
+            class="w-60" placeholder="Todas">
+            <template #footer>
+              <div class="flex items-end justify-end gap-6">
+                <Button icon="pi pi-trash" text rounded aria-label="Confirm" @click="aseguradoras = null"
+                  v-tooltip.bottom="'Borrar selección'"></Button>
+                <Button icon="pi pi-check-square" text rounded aria-label="Confirm"
+                  @click="emitfilterByAseguradora(aseguradoras)" v-tooltip.bottom="'Fitrar por aseguradora'"></Button>
+              </div>
+            </template>
+          </MultiSelect>
 */
 </script>
 <template>
