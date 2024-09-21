@@ -9,6 +9,7 @@ import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 import { definePreset } from '@primevue/themes';
 // Addons de campos base
+import SplitButton from 'primevue/splitbutton';
 import Button from "primevue/button";
 import ButtonGroup from 'primevue/buttongroup';
 import FloatLabel from 'primevue/floatlabel';
@@ -311,6 +312,7 @@ app.component('DataView', DataView);
 app.component('Column', Column);
 app.component('ColumnGroup', ColumnGroup);
 app.component('Row', Row);
+app.component('SplitButton', SplitButton);
 app.component('Button', Button);
 app.component('Tag', Tag);
 app.component('Fieldset', Fieldset);

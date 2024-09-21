@@ -200,6 +200,25 @@ const showLabel = ref(false);
 const checkWindowSize = () => {
   showLabel.value = window.innerWidth >= 1024; // Mostrar el label solo si el ancho es mayor o igual a 768px (md)
 };
+
+const items = [
+    {
+        label: 'Responder pedido',
+        icon: 'pi pi-send',
+        command: (data) => {
+          procesarSecondaryOperacion(data);
+        }
+    },
+    {
+        label: 'Dar de alta',
+        icon: 'pi pi-check',
+        command: (data) => {
+          procesarSecondaryOperacion(data);
+        }
+    }
+];
+
+
 onMounted(async () => {
   if (props.produ) {
     SecondaryTableRows.value = await fetchData("http://localhost:3000/api/secondaryTable/" + props.id_record);
@@ -244,6 +263,15 @@ onBeforeUnmount(() => {
             @click="exportCSV($event)" v-tooltip.bottom="'Exportar tabla como CSV'" />
         </div>
       </div>
+      // Botonera original
+      <ButtonGroup class="flex gap-px">
+              <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button-secondary' } }"
+                size="small" v-tooltip.bottom="'Mas info'" @click="emitShowLogsTable(data)" />
+              <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button-secondary' } }"
+                size="small" v-tooltip.bottom="'Responder pedido'" @click="procesarSecondaryOperacion(data)" />
+              <Button icon="pi pi-check" :pt="{ root: { class: 'my-custom-button-secondary' } }"
+                size="small" v-tooltip.bottom="'Dar de alta'" @click="procesarSecondaryOperacion(data)" />
+      </ButtonGroup>
 */
 </script>
 
@@ -306,14 +334,7 @@ onBeforeUnmount(() => {
         </template>
         <template v-else>
           <template v-if="col.field == 'acciones'">
-            <ButtonGroup class="flex gap-px">
-              <Button icon="pi pi-info-circle" :pt="{ root: { class: 'my-custom-button-secondary' } }"
-                aria-label="Cancel" size="small" v-tooltip.bottom="'Mas info'" @click="emitShowLogsTable(data)" />
-              <Button icon="pi pi-send" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel"
-                size="small" v-tooltip.bottom="'Responder pedido'" @click="procesarSecondaryOperacion(data)" />
-              <Button icon="pi pi-check" :pt="{ root: { class: 'my-custom-button-secondary' } }" aria-label="Cancel"
-                size="small" v-tooltip.bottom="'Dar de alta'" @click="procesarSecondaryOperacion(data)" />
-            </ButtonGroup>
+            <SplitButton :pt="{ root: { class: 'my-custom-button-secondary' } }" label="Mas info" icon="pi pi-info-circle" @click="emitShowLogsTable(data)" :model="items" size="small" v-tooltip.bottom="'Mas info'"/>
           </template>
           <template v-else-if="col.field == 'aviso'">
             <div class="flex justify-center align-center w-full h-4/5">

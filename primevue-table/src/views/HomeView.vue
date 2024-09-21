@@ -16,6 +16,9 @@ const toggleColorScheme = () => {
   element.classList.toggle('my-app-dark');
   screenMode.value = screenMode.value == "pi pi-sun" ? "pi pi-moon" : "pi pi-sun";
   mainTableDataStore.darkMode == false ? mainTableDataStore.setdarkMode(true) : mainTableDataStore.setdarkMode(false);
+  kpisPanelFlag.value == true ? kpisToggle() : '';
+  MainTablePanelFlag.value == true ? mainTablePanelToggle() : '';
+  ClientsPanelFlag.value == true ? clientsPanelToggle() : '';
 };
 const getTooltipNightMode = () => {
   return screenMode.value == "pi pi-sun"? 'Modo nocturno' : "Modo Claro"
@@ -124,7 +127,7 @@ onMounted(async () => {
               <div class="flex justify-center align-center items-center gap-2">
                 <Button :icon="kpisPanelState" rounded text
                   v-tooltip.bottom="kpisPanelTooltip" @click="kpisToggle(event)"/>
-                <span class="font-bold">Modelo: KPI´s (en construcción)</span>
+                <span class="font-bold">Modelo: KPI´s</span>
               </div>
             </template>
             <template v-if="kpisPanelFlag">

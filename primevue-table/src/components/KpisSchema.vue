@@ -3,7 +3,6 @@ import { useMainTableDataStore } from '@/stores/mainTableData';
 import { ref, onMounted } from "vue";
 
 const mainTableDataStore = useMainTableDataStore();
-console.log(mainTableDataStore.darkMode);
 const filteredByRiskChartData = ref();
 const filteredByRiskChartOptions = ref();
 const setfilteredByRiskChartOptions = () => {
